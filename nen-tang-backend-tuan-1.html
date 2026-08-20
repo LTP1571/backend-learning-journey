@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nền tảng backend — Client/Server, HTTP, REST, CRUD, Database</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0F2033; --ink-2:#3C5064; --ink-3:#6B7F92;
+  --paper:#EDF1F6; --card:#FFFFFF; --line:#C9D6E2;
+  --blue:#1B5FA8; --blue-soft:#DCE9F7;
+  --amber:#9C5B0B; --amber-soft:#FAEBD3;
+  --red:#A2302F; --red-soft:#F7DEDD;
+  --green:#2C6B41; --green-soft:#DDEDE2;
+  --pad:clamp(16px,4vw,40px);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,sans-serif; font-size:16px; line-height:1.65;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:32px 32px; background-position:-1px -1px;
+}
+.wrap{max-width:980px;margin:0 auto;padding:0 var(--pad) 96px}
+code,.mono{font-family:"IBM Plex Mono",monospace}
+h1,h2,h3{font-family:"Space Grotesk",sans-serif;font-weight:700;line-height:1.2;margin:0}
+a{color:var(--blue)}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px;border-radius:2px}
+
+/* ---------- hero ---------- */
+.hero{padding:clamp(48px,9vw,96px) 0 40px}
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+h1{font-size:clamp(30px,5.4vw,52px);margin:14px 0 12px;letter-spacing:-.02em}
+.lede{color:var(--ink-2);max-width:60ch;margin:0}
+
+/* dissection block */
+.dissect{background:var(--ink);color:#DCE6F0;border-radius:14px;padding:clamp(18px,3vw,28px);margin-top:36px;overflow-x:auto}
+.dissect .line{font-family:"IBM Plex Mono",monospace;font-size:clamp(13px,2.2vw,16px);white-space:pre;line-height:2.1}
+.tag{display:inline-block;padding:1px 7px;border-radius:5px;font-weight:500}
+.t-method{background:#2E6FBE;color:#fff}
+.t-path{background:#3E7F55;color:#fff}
+.t-body{background:#8A5A17;color:#fff}
+.t-code{background:#9B3A39;color:#fff}
+.legend{display:flex;flex-wrap:wrap;gap:10px 22px;margin-top:20px;font-size:13px;color:#9FB4C8}
+.legend b{color:#DCE6F0;font-weight:500}
+
+/* ---------- sections ---------- */
+section{margin-top:72px;scroll-margin-top:20px}
+.shead{display:flex;align-items:baseline;gap:14px;border-bottom:2px solid var(--ink);padding-bottom:10px;margin-bottom:26px;flex-wrap:wrap}
+.snum{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--blue);font-weight:500}
+h2{font-size:clamp(21px,3.2vw,28px)}
+.sub{color:var(--ink-2);margin:0 0 22px;max-width:62ch}
+h3{font-size:17px;margin:26px 0 8px}
+p{margin:0 0 14px}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:clamp(16px,2.6vw,24px)}
+.grid2{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.grid3{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+
+/* why-box */
+.why{border-left:4px solid var(--blue);background:var(--blue-soft);border-radius:0;padding:14px 18px;margin:0 0 22px}
+.why b{font-weight:600}
+.warn{border-left:4px solid var(--amber);background:var(--amber-soft);border-radius:0;padding:14px 18px;margin:18px 0}
+
+/* lifecycle */
+.flow{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));counter-reset:s}
+.step{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;position:relative}
+.step::before{counter-increment:s;content:counter(s);font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--blue);display:block;margin-bottom:6px}
+.step b{display:block;font-weight:600;margin-bottom:4px}
+.step span{font-size:14px;color:var(--ink-2)}
+.step.srv{background:var(--blue-soft);border-color:#A9C8E8}
+
+/* tables */
+table{width:100%;border-collapse:collapse;font-size:15px;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:#E3EBF3;font-weight:600;font-size:13px;letter-spacing:.03em;text-transform:uppercase;color:var(--ink-2)}
+tr:last-child td{border-bottom:none}
+td code{font-size:14px;background:#EDF1F6;padding:1px 6px;border-radius:4px}
+.scroller{overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+/* vocab chips */
+.tier{margin-bottom:18px}
+.tier h3{margin-top:0}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-family:"IBM Plex Mono",monospace;font-size:13px;padding:5px 11px;border-radius:20px;border:1px solid}
+.tier-a .chip{background:var(--card);border-color:var(--ink);color:var(--ink)}
+.tier-b .chip{background:var(--card);border-color:var(--line);color:var(--ink-2)}
+.tier-c .chip{background:transparent;border-color:var(--line);border-style:dashed;color:var(--ink-3)}
+
+/* status */
+.codes{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.codebox{border-radius:12px;padding:16px;border:1px solid}
+.codebox .num{font-family:"Space Grotesk",sans-serif;font-size:26px;font-weight:700;display:block;line-height:1.1}
+.codebox .nm{font-weight:600;font-size:15px}
+.codebox p{font-size:14px;margin:6px 0 0}
+.c2{background:var(--green-soft);border-color:#B4D4C0}.c2 .num{color:var(--green)}
+.c4{background:var(--amber-soft);border-color:#E8CFA4}.c4 .num{color:var(--amber)}
+.c5{background:var(--red-soft);border-color:#E9BCBB}.c5 .num{color:var(--red)}
+
+.split{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;margin-top:18px}
+.split-q{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:17px;margin-bottom:14px}
+.split-cols{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.split-cols div{padding:14px;border-radius:10px}
+.left{background:var(--amber-soft)}
+.right{background:var(--red-soft)}
+.split-cols b{display:block;margin-bottom:4px}
+
+/* db table visual */
+.dbwrap{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px}
+.dbtable{width:100%;border-collapse:collapse;font-family:"IBM Plex Mono",monospace;font-size:14px;border-radius:0;border:none}
+.dbtable th{background:var(--ink);color:#fff;text-transform:none;letter-spacing:0;font-size:13px}
+.dbtable td{border-bottom:1px solid var(--line)}
+.hi-row td{background:var(--blue-soft)}
+.hi-col{background:var(--green-soft)}
+.dblegend{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:14px;font-size:13px;color:var(--ink-2)}
+.sw{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:6px;border:1px solid var(--line)}
+
+/* three layers */
+.layers{display:grid;gap:0;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));align-items:stretch}
+.layer{background:var(--card);border:1px solid var(--line);padding:16px}
+.layer:first-child{border-radius:12px 12px 0 0}
+.layer:last-child{border-radius:0 0 12px 12px}
+.layer .lh{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--blue);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
+.layer pre{margin:0;font-family:"IBM Plex Mono",monospace;font-size:13px;white-space:pre-wrap;color:var(--ink-2);line-height:1.6}
+@media(min-width:700px){
+  .layer:first-child{border-radius:12px 0 0 12px}
+  .layer:last-child{border-radius:0 12px 12px 0}
+  .layer+.layer{border-left:none}
+}
+
+/* trainer */
+.trainer{background:var(--ink);color:#DCE6F0;border-radius:14px;padding:clamp(18px,3vw,28px)}
+.trainer h2{color:#fff}
+.scn{font-size:17px;margin:0 0 18px;color:#fff}
+.scn .qn{font-family:"IBM Plex Mono",monospace;font-size:12px;color:#7FA6CC;display:block;margin-bottom:6px;letter-spacing:.1em}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:13px;color:#9FB4C8;margin-bottom:6px;letter-spacing:.04em}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opt{font-family:"IBM Plex Mono",monospace;font-size:14px;padding:7px 13px;border-radius:8px;border:1px solid #35506B;background:#152C45;color:#DCE6F0;cursor:pointer;transition:background .15s,border-color .15s}
+.opt:hover{border-color:#5B84AD}
+.opt[aria-pressed="true"]{background:#2E6FBE;border-color:#4E8FDD;color:#fff}
+.btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.btn{font-family:"IBM Plex Sans",sans-serif;font-size:15px;font-weight:600;padding:10px 20px;border-radius:8px;border:1px solid transparent;cursor:pointer}
+.btn-p{background:#2E6FBE;color:#fff}
+.btn-p:hover{background:#3C82D6}
+.btn-s{background:transparent;color:#9FB4C8;border-color:#35506B}
+.btn-s:hover{color:#DCE6F0}
+.verdict{margin-top:18px;padding:16px;border-radius:10px;font-size:15px;display:none}
+.verdict.show{display:block}
+.verdict.ok{background:#17402A;color:#B9E3C6}
+.verdict.no{background:#3F1D1D;color:#F2C4C3}
+.verdict ul{margin:8px 0 0;padding-left:20px}
+.verdict li{margin-bottom:4px}
+.score{font-family:"IBM Plex Mono",monospace;font-size:13px;color:#7FA6CC;margin-top:14px}
+
+footer{margin-top:80px;padding-top:24px;border-top:1px solid var(--line);font-size:14px;color:var(--ink-3)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <div class="eyebrow">Tuần 1 · Nấc 1 · Nền tảng trước khi viết dòng code đầu tiên</div>
+  <h1>Client/Server, HTTP, REST API,<br>CRUD và Database</h1>
+  <p class="lede">Toàn bộ khái niệm phải nắm trước khi bắt đầu Spring Boot. Mỗi mục trả lời câu hỏi "thứ này sinh ra để giải quyết chuyện gì" trước, rồi mới tới định nghĩa.</p>
+
+  <div class="dissect" role="img" aria-label="Một HTTP request và response được mổ xẻ thành các thành phần: method, endpoint, body, status code">
+    <div class="line"><span class="tag t-method">POST</span> <span class="tag t-path">/todos</span>  HTTP/1.1</div>
+    <div class="line">Host: localhost:8080</div>
+    <div class="line">Content-Type: application/json</div>
+    <div class="line"> </div>
+    <div class="line"><span class="tag t-body">{ "title": "Học Git", "is_done": false }</span></div>
+    <div class="line" style="color:#5B7A99">──────────── server trả về ────────────</div>
+    <div class="line">HTTP/1.1 <span class="tag t-code">201 Created</span></div>
+    <div class="line">{ "id": 8, "title": "Học Git", "is_done": false }</div>
+    <div class="legend">
+      <span><b>method</b> — làm gì</span>
+      <span><b>endpoint</b> — với cái gì</span>
+      <span><b>body</b> — dữ liệu kèm theo</span>
+      <span><b>status code</b> — kết quả ra sao</span>
+    </div>
+  </div>
+</header>
+
+<!-- 01 -->
+<section id="s1">
+  <div class="shead"><span class="snum">01</span><h2>Client và server</h2></div>
+  <div class="why"><b>Sinh ra để giải quyết chuyện gì:</b> hai máy tính ở hai nơi khác nhau, không dùng chung bộ nhớ, không nhìn thấy nhau. Cách duy nhất để trao đổi dữ liệu là gửi cho nhau những gói tin có định dạng thống nhất. HTTP là bộ quy ước về định dạng đó.</div>
+
+  <div class="grid2">
+    <div class="card">
+      <h3 style="margin-top:0">Client</h3>
+      <p style="margin:0">Bên <b>mở lời trước</b>. Postman, trình duyệt, app điện thoại. Tạo request, gửi đi, chờ, hiển thị kết quả.</p>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">Server</h3>
+      <p style="margin:0">Bên <b>luôn trực máy, chỉ trả lời</b>. Không bao giờ tự gọi cho client trong HTTP. Nhận request, xử lý, trả response.</p>
+    </div>
+  </div>
+
+  <h3>Vòng đời một request</h3>
+  <div class="flow">
+    <div class="step"><b>Client đóng gói</b><span>method, endpoint, header, body. Chưa có gì rời khỏi máy.</span></div>
+    <div class="step"><b>Gửi qua mạng</b><span>Dựa vào địa chỉ và port trong URL, không phải endpoint.</span></div>
+    <div class="step srv"><b>Server xử lý</b><span>Đọc method + endpoint, đọc/ghi database.</span></div>
+    <div class="step srv"><b>Server tạo response</b><span>Status code + body (nếu có).</span></div>
+    <div class="step"><b>Client hiển thị</b><span>Postman in ra status code và body.</span></div>
+  </div>
+
+  <div class="warn"><b>Stateless.</b> Xong bước 5, kết nối đóng lại. Server <b>không nhớ</b> bạn vừa hỏi gì. Request tiếp theo là một câu chuyện hoàn toàn mới. Đây là lý do sau này phải có token hoặc session — để tự nhắc server biết bạn là ai.</div>
+</section>
+
+<!-- 02 -->
+<section id="s2">
+  <div class="shead"><span class="snum">02</span><h2>Địa chỉ: localhost và port</h2></div>
+  <p class="sub"><code>localhost:8080</code> không phải một thứ, mà là hai thứ trả lời hai câu hỏi khác nhau.</p>
+
+  <div class="grid2">
+    <div class="card">
+      <h3 style="margin-top:0">localhost — máy nào?</h3>
+      <p style="margin:0">Tên gọi của "chính máy đang chạy lệnh này", tương ứng IP <code>127.0.0.1</code>. Request không ra Internet, nó quay đầu về máy bạn. Nhờ vậy bạn test được server ngay mà không cần thuê máy chủ.</p>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">8080 — cửa nào trên máy đó?</h3>
+      <p style="margin:0">Một máy chạy nhiều chương trình cùng nghe mạng. IP dẫn tới đúng <b>toà nhà</b>, port là <b>số phòng</b>. Server của bạn ở <code>:8080</code>, PostgreSQL ở <code>:5432</code> — cùng máy, khác phòng.</p>
+    </div>
+  </div>
+
+  <div class="warn"><b>Phân biệt hai loại hỏng.</b> Gõ nhầm port → <code>connection refused</code>, <b>không có status code nào cả</b>, vì request chưa tới được server. Còn 4xx/5xx chỉ tồn tại khi request <b>đã tới</b> server và server đã trả lời. Nhầm hai thứ này là nhầm chỗ đi tìm lỗi.</div>
+</section>
+
+<!-- 03 -->
+<section id="s3">
+  <div class="shead"><span class="snum">03</span><h2>HTTP method</h2></div>
+  <div class="why"><b>Sinh ra để giải quyết chuyện gì:</b> endpoint trả lời "tác động lên <i>cái gì</i>", method trả lời "<i>làm gì</i> với nó". Hai thông tin độc lập, không suy ra được từ nhau. Nhìn <code>/todos/7</code>, server không thể biết bạn muốn xem, sửa hay xoá — mà server không được phép đoán.</div>
+
+  <div class="scroller"><table>
+    <tr><th>Method</th><th>Ý nghĩa</th><th>Có body?</th><th>Đổi dữ liệu trên server?</th></tr>
+    <tr><td><code>GET</code></td><td>Lấy dữ liệu về</td><td>Không</td><td>Không — gọi lại 100 lần vẫn vô hại</td></tr>
+    <tr><td><code>POST</code></td><td>Tạo mới</td><td>Có</td><td>Có — gọi 2 lần tạo 2 bản ghi</td></tr>
+    <tr><td><code>PUT</code></td><td>Thay thế toàn bộ bản ghi</td><td>Có</td><td>Có — gọi 2 lần kết quả như 1 lần</td></tr>
+    <tr><td><code>PATCH</code></td><td>Sửa một phần bản ghi</td><td>Có</td><td>Có</td></tr>
+    <tr><td><code>DELETE</code></td><td>Xoá</td><td>Không</td><td>Có</td></tr>
+  </table></div>
+
+  <p style="margin-top:16px">Cột cuối là <b>cam kết về hậu quả</b>. Vì GET được ngầm hiểu là chỉ đọc, trình duyệt và các hệ thống trung gian mới dám lưu lại kết quả để dùng lại. Nếu không có method, không ai dám tối ưu gì cả.</p>
+</section>
+
+<!-- 04 -->
+<section id="s4">
+  <div class="shead"><span class="snum">04</span><h2>REST API và CRUD</h2></div>
+  <div class="why"><b>Sinh ra để giải quyết chuyện gì:</b> nếu mỗi hành động đẻ ra một endpoint riêng (<code>/getTodo</code>, <code>/deleteTodo</code>, <code>/updateTodo</code>…) thì API phình ra vô tận và không ai đoán được tên. REST đặt ra quy ước: <b>endpoint là danh từ số nhiều, hành động nằm ở method</b>. Nhờ vậy chỉ cần hai endpoint là đủ cho toàn bộ vòng đời một tài nguyên.</div>
+
+  <div class="scroller"><table>
+    <tr><th>CRUD</th><th>Method</th><th>Endpoint</th><th>SQL</th><th>Status khi thành công</th></tr>
+    <tr><td>Create</td><td><code>POST</code></td><td><code>/todos</code></td><td><code>INSERT</code></td><td>201 Created</td></tr>
+    <tr><td>Read (danh sách)</td><td><code>GET</code></td><td><code>/todos</code></td><td><code>SELECT</code></td><td>200 OK</td></tr>
+    <tr><td>Read (một bản ghi)</td><td><code>GET</code></td><td><code>/todos/7</code></td><td><code>SELECT … WHERE id=7</code></td><td>200 OK</td></tr>
+    <tr><td>Update</td><td><code>PUT</code></td><td><code>/todos/7</code></td><td><code>UPDATE</code></td><td>200 OK</td></tr>
+    <tr><td>Delete</td><td><code>DELETE</code></td><td><code>/todos/7</code></td><td><code>DELETE</code></td><td>204 No Content</td></tr>
+  </table></div>
+
+  <h3>Ba quy tắc đặt endpoint</h3>
+  <div class="grid3">
+    <div class="card"><b>Danh từ, không động từ</b><p style="margin:6px 0 0;font-size:14px;color:var(--ink-2)"><code>/todos</code> đúng. <code>/createNewTodo</code> sai — động từ đã nằm ở method rồi, viết lại là thừa.</p></div>
+    <div class="card"><b>Số nhiều</b><p style="margin:6px 0 0;font-size:14px;color:var(--ink-2)"><code>/todos</code> là cả bộ sưu tập, <code>/todos/7</code> là một phần tử trong đó. Đọc như đường dẫn thư mục.</p></div>
+    <div class="card"><b>Phân cấp theo sở hữu</b><p style="margin:6px 0 0;font-size:14px;color:var(--ink-2)"><code>/users/3/todos</code> = các todo của user 3. Cấp sau thuộc về cấp trước.</p></div>
+  </div>
+</section>
+
+<!-- 05 -->
+<section id="s5">
+  <div class="shead"><span class="snum">05</span><h2>Status code</h2></div>
+  <p class="sub">Con số ba chữ số để client biết chuyện gì đã xảy ra mà không cần đọc body. Chữ số đầu tiên là nhóm, và nhóm mới là thứ phải thuộc.</p>
+
+  <div class="codes">
+    <div class="codebox c2"><span class="num">2xx</span><span class="nm">Thành công</span><p>Server đã làm đúng điều được yêu cầu.</p></div>
+    <div class="codebox c4"><span class="num">4xx</span><span class="nm">Lỗi phía client</span><p>Request có vấn đề. Server vẫn khoẻ. Client gửi lại y hệt vẫn hỏng.</p></div>
+    <div class="codebox c5"><span class="num">5xx</span><span class="nm">Lỗi phía server</span><p>Request hợp lệ nhưng server tự gãy. Client gửi lại y hệt có thể chạy được.</p></div>
+  </div>
+
+  <div class="split">
+    <div class="split-q">Ranh giới 4xx / 5xx: sửa được ở phía nào?</div>
+    <div class="split-cols">
+      <div class="left"><b>4xx — client sửa thì hết</b>Sửa lại URL, điền đủ field, đăng nhập lại, hỏi đúng id có thật. Server không phải làm gì.</div>
+      <div class="right"><b>5xx — client không sửa được gì</b>Database tắt, code ném exception, hết bộ nhớ. Người phải sửa là bạn, trong code server.</div>
+    </div>
+    <p style="margin:16px 0 0;font-size:15px">Bẫy quen thuộc: hỏi <code>GET /todos/999</code> mà không có bản ghi nào id 999 → đây là <b>404</b>, không phải 500. Server hoàn toàn khoẻ mạnh và đã trả lời chính xác: thứ bạn hỏi không tồn tại. Chỉ khi <i>code của server</i> tự gãy trong lúc xử lý thì mới là 5xx.</p>
+  </div>
+
+  <div class="scroller" style="margin-top:20px"><table>
+    <tr><th>Code</th><th>Tên</th><th>Dùng khi</th></tr>
+    <tr><td><code>200</code></td><td>OK</td><td>Đọc hoặc sửa thành công, có dữ liệu trả về</td></tr>
+    <tr><td><code>201</code></td><td>Created</td><td>Tạo mới thành công. Riêng cho POST</td></tr>
+    <tr><td><code>204</code></td><td>No Content</td><td>Thành công nhưng không có gì để trả. Thường là DELETE</td></tr>
+    <tr><td><code>400</code></td><td>Bad Request</td><td>Body sai định dạng, thiếu field bắt buộc, sai kiểu dữ liệu</td></tr>
+    <tr><td><code>401</code></td><td>Unauthorized</td><td>Chưa đăng nhập, chưa có token</td></tr>
+    <tr><td><code>403</code></td><td>Forbidden</td><td>Đã biết bạn là ai, nhưng bạn không có quyền</td></tr>
+    <tr><td><code>404</code></td><td>Not Found</td><td>Sai endpoint, hoặc id không tồn tại trong database</td></tr>
+    <tr><td><code>500</code></td><td>Internal Server Error</td><td>Code server ném exception, mất kết nối database</td></tr>
+  </table></div>
+  <p style="margin-top:14px;font-size:15px;color:var(--ink-2)">401 và 403 hay bị đảo. Mẹo nhớ: 401 là <i>"anh là ai?"</i>, 403 là <i>"biết anh rồi, nhưng không được"</i>.</p>
+</section>
+
+<!-- 06 -->
+<section id="s6">
+  <div class="shead"><span class="snum">06</span><h2>Database cơ bản</h2></div>
+  <div class="why"><b>Sinh ra để giải quyết chuyện gì:</b> biến trong RAM chết theo tiến trình — tắt server là mất sạch. Database giữ dữ liệu lại sau khi chương trình tắt, và cho nhiều người cùng đọc/ghi mà không giẫm lên nhau.</div>
+
+  <div class="dbwrap">
+    <div class="scroller"><table class="dbtable">
+      <tr><th>id</th><th>title</th><th class="hi-col">is_done</th><th>created_at</th></tr>
+      <tr><td>1</td><td>Cấu hình Git</td><td class="hi-col">true</td><td>2026-08-01</td></tr>
+      <tr class="hi-row"><td>7</td><td>Học git flow</td><td class="hi-col">false</td><td>2026-08-04</td></tr>
+      <tr><td>8</td><td>Ôn lại HTTP</td><td class="hi-col">false</td><td>2026-08-05</td></tr>
+    </table></div>
+    <div class="dblegend">
+      <span><b>table</b> — cả bảng <code>todos</code> này</span>
+      <span><span class="sw" style="background:var(--blue-soft)"></span><b>row</b> — một todo cụ thể, ví dụ id 7</span>
+      <span><span class="sw" style="background:var(--green-soft)"></span><b>column</b> — một thuộc tính, ví dụ <code>is_done</code></span>
+    </div>
+  </div>
+
+  <div class="grid2" style="margin-top:18px">
+    <div class="card">
+      <h3 style="margin-top:0">Primary key</h3>
+      <p style="margin:0">Cột định danh <b>duy nhất</b> một row trong bảng, không trùng, không rỗng. Ở đây là <code>id</code>. Không có nó thì <code>GET /todos/7</code> gãy đầu tiên — vì server không còn cách nào chỉ đúng một dòng để lấy về hoặc để xoá.</p>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">Foreign key</h3>
+      <p style="margin:0">Cột trong bảng này trỏ tới primary key của bảng khác. Một user có nhiều todo, nên <code>user_id</code> nằm ở bảng <code>todos</code> — bên <b>"nhiều"</b> giữ khoá. Nếu để ở bảng <code>users</code> thì một ô phải chứa nhiều id, mà một ô chỉ chứa được một giá trị.</p>
+    </div>
+  </div>
+
+  <h3>Cùng một dữ liệu, ba hình dạng</h3>
+  <div class="layers">
+    <div class="layer">
+      <div class="lh">row trong database</div>
+      <pre>id       7
+title    Học git flow
+is_done  false</pre>
+    </div>
+    <div class="layer">
+      <div class="lh">object trong Java</div>
+      <pre>Todo với 3 field
++ getter/setter
++ kiểu dữ liệu Java</pre>
+    </div>
+    <div class="layer">
+      <div class="lh">json gửi cho client</div>
+      <pre>{ "id": 7,
+  "title": "Học git flow",
+  "isDone": false }</pre>
+    </div>
+  </div>
+  <p style="margin-top:14px">Giống nhau: cùng một sự thật, cùng bộ thuộc tính. Khác nhau: <b>row</b> nằm trên đĩa và do PostgreSQL quản lý; <b>object</b> nằm trong RAM, có hành vi (method), chết khi tiến trình tắt; <b>JSON</b> là chuỗi ký tự thuần, không có hành vi, chỉ để đi trên mạng. Toàn bộ công việc backend phần lớn là dịch qua lại giữa ba tầng này.</p>
+</section>
+
+<!-- 07 -->
+<section id="s7">
+  <div class="shead"><span class="snum">07</span><h2>Thuật ngữ phân tầng</h2></div>
+  <p class="sub">Đừng học đều tay. Ba tầng dưới đây có yêu cầu khác nhau.</p>
+
+  <div class="tier tier-a">
+    <h3>Bắt buộc thuộc — phải bật ra ngay, không cần nghĩ</h3>
+    <div class="chips">
+      <span class="chip">client</span><span class="chip">server</span><span class="chip">request</span><span class="chip">response</span><span class="chip">method</span><span class="chip">endpoint</span><span class="chip">body</span><span class="chip">status code</span><span class="chip">port</span><span class="chip">localhost</span><span class="chip">JSON</span><span class="chip">CRUD</span><span class="chip">table</span><span class="chip">row</span><span class="chip">column</span><span class="chip">primary key</span><span class="chip">foreign key</span>
+    </div>
+  </div>
+
+  <div class="tier tier-b">
+    <h3>Chỉ cần hiểu ý — gặp lại là nhận ra</h3>
+    <div class="chips">
+      <span class="chip">stateless</span><span class="chip">REST</span><span class="chip">resource</span><span class="chip">header</span><span class="chip">Content-Type</span><span class="chip">connection refused</span><span class="chip">127.0.0.1</span><span class="chip">schema</span><span class="chip">DDL / DML</span><span class="chip">idempotent</span>
+    </div>
+  </div>
+
+  <div class="tier tier-c">
+    <h3>Quên được — gặp thì tra, đừng học lúc này</h3>
+    <div class="chips">
+      <span class="chip">DNS</span><span class="chip">TLS</span><span class="chip">NAT</span><span class="chip">CORS</span><span class="chip">cache</span><span class="chip">HATEOAS</span><span class="chip">index</span><span class="chip">transaction</span><span class="chip">normalization</span>
+    </div>
+  </div>
+</section>
+
+<!-- trainer -->
+<section id="trainer">
+  <div class="trainer">
+    <div class="eyebrow" style="color:#7FA6CC">Luyện phần yếu nhất</div>
+    <h2 style="margin:10px 0 8px">Ghép request hoàn chỉnh</h2>
+    <p style="color:#9FB4C8;margin:0 0 24px;max-width:60ch">Nhớ định nghĩa không bằng ghép được. Đọc tình huống, chọn đủ ba thành phần, rồi mới bấm kiểm tra. Đừng đoán rồi bấm bừa để dò đáp án.</p>
+
+    <div class="scn"><span class="qn" id="qn">Tình huống 1 / 6</span><span id="scenario">…</span></div>
+
+    <div class="field">
+      <label>Method</label>
+      <div class="opts" id="opt-method"></div>
+    </div>
+    <div class="field">
+      <label>Endpoint</label>
+      <div class="opts" id="opt-endpoint"></div>
+    </div>
+    <div class="field">
+      <label>Status code khi thành công</label>
+      <div class="opts" id="opt-status"></div>
+    </div>
+
+    <div class="btnrow">
+      <button class="btn btn-p" id="check">Kiểm tra</button>
+      <button class="btn btn-s" id="next">Tình huống tiếp theo</button>
+      <button class="btn btn-s" id="reset">Làm lại từ đầu</button>
+    </div>
+    <div class="verdict" id="verdict"></div>
+    <div class="score" id="score">Đúng 0 / 0</div>
+  </div>
+</section>
+
+<footer>
+  Tài liệu ôn tập Tuần 1 — Nấc 1. Hạng mục tiếp theo trong lộ trình: cấu hình Git và git flow.
+</footer>
+
+</div>
+
+<script>
+const DATA = [
+  {s:"Người dùng mở app và muốn xem toàn bộ danh sách todo.",
+   m:"GET", e:"/todos", c:"200",
+   why:"Đọc cả bộ sưu tập nên endpoint là danh từ số nhiều, không kèm id. GET không có body. Có dữ liệu trả về nên là 200."},
+  {s:"Người dùng tạo một todo mới với tiêu đề \"Học Git\".",
+   m:"POST", e:"/todos", c:"201",
+   why:"Tạo mới thì tác động lên cả bộ sưu tập, chưa có id để mà chỉ. Body chứa title. 201 Created là code dành riêng cho việc tạo thành công."},
+  {s:"Người dùng xem chi tiết todo có id = 7.",
+   m:"GET", e:"/todos/7", c:"200",
+   why:"Chỉ đích danh một phần tử nên endpoint có id. Nếu id 7 không tồn tại thì là 404, không phải 500."},
+  {s:"Người dùng tick hoàn thành todo id = 7, gửi lại toàn bộ bản ghi đã sửa.",
+   m:"PUT", e:"/todos/7", c:"200",
+   why:"Thay thế toàn bộ bản ghi đã có nên dùng PUT và phải chỉ đúng id. Trả về bản ghi sau khi sửa nên là 200. Nếu chỉ gửi mỗi field is_done thì dùng PATCH."},
+  {s:"Người dùng xoá todo id = 7.",
+   m:"DELETE", e:"/todos/7", c:"204",
+   why:"DELETE không có body. Xoá xong không còn gì để trả về nên 204 No Content chuẩn hơn 200."},
+  {s:"Người dùng gửi POST tạo todo nhưng quên field title bắt buộc.",
+   m:"POST", e:"/todos", c:"400",
+   why:"Method và endpoint vẫn đúng, chỉ có body thiếu. Lỗi nằm ở phía client và client sửa lại là hết, nên 400 chứ không phải 500."}
+];
+const OPTS = {
+  method:["GET","POST","PUT","PATCH","DELETE"],
+  endpoint:["/todos","/todos/7","/createTodo","/todos/all"],
+  status:["200","201","204","400","404","500"]
+};
+const LABEL = {method:"Method", endpoint:"Endpoint", status:"Status code"};
+let i = 0, picked = {}, done = 0, right = 0, answered = false;
+
+function build(kind){
+  const box = document.getElementById("opt-"+kind);
+  box.innerHTML = "";
+  OPTS[kind].forEach(v=>{
+    const b = document.createElement("button");
+    b.className = "opt"; b.textContent = v; b.type = "button";
+    b.setAttribute("aria-pressed","false");
+    b.setAttribute("aria-label", LABEL[kind]+" "+v);
+    b.onclick = ()=>{
+      picked[kind] = v;
+      [...box.children].forEach(c=>c.setAttribute("aria-pressed", c===b ? "true":"false"));
+    };
+    box.appendChild(b);
+  });
+}
+function render(){
+  answered = false; picked = {};
+  document.getElementById("qn").textContent = "Tình huống "+(i+1)+" / "+DATA.length;
+  document.getElementById("scenario").textContent = DATA[i].s;
+  ["method","endpoint","status"].forEach(build);
+  const v = document.getElementById("verdict");
+  v.className = "verdict"; v.innerHTML = "";
+}
+function score(){
+  document.getElementById("score").textContent = "Đúng "+right+" / "+done;
+}
+document.getElementById("check").onclick = ()=>{
+  if(answered) return;
+  const q = DATA[i], v = document.getElementById("verdict");
+  if(!picked.method || !picked.endpoint || !picked.status){
+    v.className = "verdict show no";
+    v.textContent = "Chọn đủ cả ba thành phần rồi hãy kiểm tra.";
+    return;
+  }
+  answered = true; done++;
+  const wrong = [];
+  if(picked.method !== q.m) wrong.push("Method: bạn chọn "+picked.method+", đúng là "+q.m);
+  if(picked.endpoint !== q.e) wrong.push("Endpoint: bạn chọn "+picked.endpoint+", đúng là "+q.e);
+  if(picked.status !== q.c) wrong.push("Status code: bạn chọn "+picked.status+", đúng là "+q.c);
+  if(wrong.length === 0){
+    right++;
+    v.className = "verdict show ok";
+    v.innerHTML = "<b>Đúng cả ba.</b><br>"+q.why;
+  } else {
+    v.className = "verdict show no";
+    v.innerHTML = "<b>Sai "+wrong.length+" chỗ.</b><ul><li>"+wrong.join("</li><li>")+"</li></ul><p style='margin:10px 0 0'>"+q.why+"</p>";
+  }
+  score();
+};
+document.getElementById("next").onclick = ()=>{ i = (i+1) % DATA.length; render(); };
+document.getElementById("reset").onclick = ()=>{ i = 0; done = 0; right = 0; score(); render(); };
+render(); score();
+</script>
+</body>
+</html>

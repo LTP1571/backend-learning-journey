@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tổng hợp kiến thức — Project todo #1</title>
+<style>
+:root{--bg:#12141a;--card:#1a1d25;--card2:#161920;--line:#2a2f3a;--tx:#e4e7ee;--dim:#9aa3b2;--ac:#6ea8fe;--warn:#ffb454;--ok:#5ed49a;--red:#ff7b72;--pur:#c39bff}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:20px}
+body{margin:0;padding:0;background:var(--bg);color:var(--tx);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:900px;margin:0 auto;padding:28px 16px 80px}
+h1{font-size:28px;margin:0 0 6px}
+.sub{color:var(--dim);font-size:14px;margin-bottom:8px}
+.note{background:#1c1e12;border:1px solid #3a3a20;border-radius:8px;padding:12px 14px;font-size:14px;color:#d8d2b0;margin:18px 0 28px}
+nav{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-bottom:32px}
+nav h2{font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--ac);margin:0 0 10px}
+nav ol{margin:0;padding-left:22px;columns:2;column-gap:28px}
+nav li{margin-bottom:5px}
+nav a{color:var(--tx);text-decoration:none;font-size:14px;transition:color .15s}
+nav a:hover{color:var(--ac)}
+section{margin-bottom:44px;scroll-margin-top:20px}
+h2.sec{font-size:21px;margin:0 0 4px;padding-bottom:8px;border-bottom:2px solid var(--line)}
+h2.sec span{color:var(--dim);font-size:14px;font-weight:400;margin-left:8px}
+h3{font-size:17px;margin:26px 0 8px;color:var(--ac)}
+h4{font-size:15px;margin:18px 0 6px;color:var(--pur)}
+p{margin:10px 0}
+ul,ol{margin:10px 0;padding-left:24px}
+li{margin-bottom:6px}
+code{background:#0e1016;padding:1px 6px;border-radius:4px;font-size:14px;color:#c3d0e8;white-space:nowrap}
+pre{background:#0e1016;border:1px solid var(--line);border-radius:8px;padding:12px 14px;overflow-x:auto;font-size:13.5px;line-height:1.55}
+pre code{background:none;padding:0;white-space:pre}
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:#20242e;color:var(--ac);font-weight:600}
+.why{background:var(--card2);border-left:3px solid var(--ac);border-radius:0 8px 8px 0;padding:12px 16px;margin:14px 0}
+.why b{color:var(--ac)}
+.trap{background:#1f1418;border-left:3px solid var(--red);border-radius:0 8px 8px 0;padding:12px 16px;margin:14px 0}
+.trap b{color:var(--red)}
+.tier{background:var(--card2);border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin:14px 0;font-size:14.5px}
+.tier b{color:var(--warn)}
+.tier div{margin-bottom:4px}
+.ok{color:var(--ok)}.rd{color:var(--red)}.wn{color:var(--warn)}
+.flow{background:#0e1016;border:1px solid var(--line);border-radius:8px;padding:16px;margin:16px 0;font-size:14px;line-height:2}
+.why,.trap,.tier{transition:border-color .2s}
+tr{transition:background .15s}
+tbody tr:hover,table tr:hover{background:#1e222b}
+.backtop{display:inline-block;margin-top:18px;font-size:13px;color:var(--dim);text-decoration:none;border:1px solid var(--line);border-radius:20px;padding:3px 12px;transition:color .2s,border-color .2s}
+.backtop:hover{color:var(--ac);border-color:var(--ac)}
+#top{position:fixed;right:24px;bottom:24px;z-index:20;display:none;width:44px;height:44px;line-height:41px;text-align:center;background:var(--card);color:var(--ac);border:1px solid var(--line);border-radius:50%;font-size:20px;text-decoration:none;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.35);transition:transform .2s,border-color .2s}
+#top:hover{transform:translateY(-3px);border-color:var(--ac)}
+@media(max-width:620px){
+  nav ol{columns:1}
+  h1{font-size:23px}
+  .wrap{padding:20px 14px 70px}
+  h2.sec{font-size:19px}
+  table{font-size:13.5px}
+  th,td{padding:6px 8px}
+  #top{right:16px;bottom:16px}
+}
+.pill{display:inline-block;background:#20242e;border:1px solid var(--line);border-radius:20px;padding:2px 10px;font-size:12.5px;color:var(--dim);margin:0 4px 4px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+<span id="top-anchor"></span>
+
+<h1>Tổng hợp kiến thức — Project <code>todo</code> #1</h1>
+<div class="sub">Toàn bộ những gì đã học qua project đầu tiên · 1/8 – 20/8/2026 · Spring Boot 4.1.0 + PostgreSQL 18.4 + JDK 21</div>
+
+<div class="note">
+<b>Về code trong file này:</b> theo Nấc AI 1, file chỉ ghi <b>cấu trúc và chữ ký</b> (tên annotation, kiểu trả về, tham số) — không có thân method để copy. Muốn biết một method chạy ra sao thì đọc phần giải thích rồi tự gõ lại.
+</div>
+
+<nav>
+<h2>Mục lục</h2>
+<ol>
+<li><a href="#tongthe">Bức tranh tổng thể</a></li>
+<li><a href="#kientruc">Bốn tầng kiến trúc</a></li>
+<li><a href="#entity">Entity &amp; JPA</a></li>
+<li><a href="#id">Sinh id &amp; sequence</a></li>
+<li><a href="#hibernate">Hibernate sinh SQL</a></li>
+<li><a href="#repo">Repository</a></li>
+<li><a href="#optional">Optional</a></li>
+<li><a href="#service">Service &amp; bean</a></li>
+<li><a href="#controller">Controller</a></li>
+<li><a href="#responseentity">ResponseEntity</a></li>
+<li><a href="#json">JSON &amp; chuyển đổi</a></li>
+<li><a href="#dto">DTO</a></li>
+<li><a href="#validation">Validation</a></li>
+<li><a href="#exception">Exception &amp; handler</a></li>
+<li><a href="#status">Mã trạng thái HTTP</a></li>
+<li><a href="#config">Cấu hình &amp; môi trường</a></li>
+<li><a href="#loi">Lỗi đã mắc</a></li>
+<li><a href="#no">Còn nợ ở project này</a></li>
+</ol>
+</nav>
+
+<!-- 1 -->
+<section id="tongthe">
+<h2 class="sec">1. Bức tranh tổng thể</h2>
+
+<div class="why"><b>Sinh ra để giải quyết chuyện gì:</b> hai máy tính ở hai nơi cần trao đổi dữ liệu, nhưng chỉ gửi cho nhau được <b>văn bản</b>. Toàn bộ Spring Boot tồn tại để biến văn bản đó thành object Java, cho code xử lý, rồi biến ngược object thành văn bản gửi trả.</div>
+
+<p>Một request đi qua đúng chuỗi này:</p>
+
+<div class="flow">
+<span class="pill">Postman</span> gửi văn bản JSON qua HTTP<br>
+↓<br>
+<span class="pill">Spring</span> đọc URL + method, tìm đúng method Controller<br>
+↓<br>
+<span class="pill">Jackson</span> đọc JSON → dựng object <code>TodoRequest</code><br>
+↓<br>
+<span class="pill">Validation</span> kiểm <code>@NotBlank</code> — sai thì dừng ngay tại đây, trả 400<br>
+↓<br>
+<span class="pill">Controller</span> gọi Service, không tự quyết gì<br>
+↓<br>
+<span class="pill">Service</span> quyết định làm gì, dựng <code>Todo</code>, gọi Repository<br>
+↓<br>
+<span class="pill">Repository</span> → <span class="pill">Hibernate</span> điền SQL → <span class="pill">PostgreSQL</span><br>
+↓<br>
+database trả dòng dữ liệu → Hibernate dựng lại object <code>Todo</code><br>
+↓<br>
+<span class="pill">Service</span> đổi <code>Todo</code> → <code>TodoResponse</code> (method <code>toResponse</code>)<br>
+↓<br>
+<span class="pill">Jackson</span> đổi <code>TodoResponse</code> → văn bản JSON<br>
+↓<br>
+<span class="pill">Postman</span> nhận status + body
+</div>
+
+<p>Hai chỗ đổi dạng dữ liệu là chỗ hay nhầm nhất: <b>văn bản → object</b> ở đầu vào, và <b>object → văn bản</b> ở đầu ra. Object chỉ tồn tại trong bộ nhớ máy chủ; thứ đi qua dây mạng luôn là văn bản.</p>
+<a class="backtop" href="#top-anchor">↑ Về mục lục</a>
+</section>
+
+<!-- 2 -->
+<section id="kientruc">
+<h2 class="sec">2. Bốn tầng kiến trúc</h2>
+
+<div class="why"><b>Sinh ra để giải quyết chuyện gì:</b> nếu nhét hết vào một class, sửa một chỗ vỡ mọi chỗ, và không test được từng phần riêng. Chia tầng để mỗi tầng có <b>đúng một loại việc</b>.</div>
+
+<table>
+<tr><th>Tầng</th><th>Class</th><th>Việc duy nhất của nó</th></tr>
+<tr><td>Entity</td><td><code>Todo</code></td><td>Mô tả một dòng trong bảng database</td></tr>
+<tr><td>Repository</td><td><code>TodoRepository</code></td><td>Nói chuyện với database</td></tr>
+<tr><td>Service</td><td><code>TodoService</code></td><td>Quyết định làm gì</td></tr>
+<tr><td>Controller</td><td><code>TodoController</code></td><td>Nhận request, trả kết quả</td></tr>
+</table>
+
+<h3>Quy tắc đã tự chốt</h3>
+<ul>
+<li>Controller <b>nhận request và trả kết quả</b> — không quyết định gì.</li>
+<li>Service <b>quyết định làm gì</b> — mọi if/else nghiệp vụ nằm ở đây.</li>
+<li>Repository <b>nói chuyện với database</b> — không biết gì về HTTP.</li>
+<li><b>Method Controller dài hơn một dòng là gần như đang lấn việc của Service.</b></li>
+<li>Service <b>không được nhắc mã HTTP</b> trong message exception. Service không biết HTTP tồn tại; việc dịch exception thành 404 là của handler.</li>
+</ul>
+
+<div class="trap"><b>Bẫy đã dính:</b> gọi thẳng <code>repository</code> trong Controller. Chạy được, nhưng phá vỡ tầng — Controller lúc đó vừa nhận request vừa nói chuyện với database, và mọi logic nghiệp vụ mất chỗ để ở.</div>
+
+<h3>Phụ thuộc chỉ đi một chiều</h3>
+<p>Controller biết Service, Service biết Repository, Repository biết database. <b>Không có chiều ngược.</b> Repository không được biết Service tồn tại. Nhờ vậy đổi Controller không ảnh hưởng Repository.</p>
+<a class="backtop" href="#top-anchor">↑ Về mục lục</a>
+</section>
+
+<!-- 3 -->
+<section id="entity">
+<h2 class="sec">3. Entity &amp; JPA</h2>
+
+<div class="why"><b>Sinh ra để giải quyết chuyện gì:</b> database nghĩ theo <b>bảng và dòng</b>, Java nghĩ theo <b>class và object</b>. ORM (Object-Relational Mapping) là lớp dịch giữa hai cách nghĩ đó — Hibernate là bản cài đặt cụ thể của ý tưởng ORM.</div>
+
+<pre><code>@Entity
+public class Todo {
+    @Id
+    @GeneratedValue
+    private Long id;
+    private String title;
+    private boolean completed;
+    // getter + setter cho cả ba field
+}</code></pre>
+
+<table>
+<tr><th>Thành phần</th><th>Nó nói với Hibernate điều gì</th></tr>
+<tr><td><code>@Entity</code></td><td>Class này ứng với một bảng. Không có nó, Hibernate coi như class thường và bỏ qua.</td></tr>
+<tr><td><code>@Id</code></td><td>Field này là khóa chính — thứ phân biệt dòng này với dòng khác.</td></tr>
+<tr><td><code>@GeneratedValue</code></td><td>Đừng chờ code gán id, database tự sinh.</td></tr>
+<tr><td>Field thường</td><td>Mỗi field không đánh dấu gì thành một cột cùng tên.</td></tr>
+<tr><td>Getter/setter</td><td>Hibernate và Jackson đều đọc/ghi field qua getter và setter, không đọc field trực tiếp.</td></tr>
+</table>
+
+<div class="tier"><b>Phân tầng thuật ngữ</b>
+<div><span class="rd">Thuộc:</span> <code>@Entity</code>, <code>@Id</code>, <code>@GeneratedValue</code></div>
+<div><span class="wn">Hiểu ý:</span> ORM, Hibernate là bản cài đặt của JPA</div>
+<div><span class="ok">Quên được:</span> tên đầy đủ các interface trong đặc tả JPA</div>
+</div>
+
+<div class="trap"><b>Vì sao <code>boolean completed</code> có getter là <code>isCompleted()</code> chứ không phải <code>getCompleted()</code>:</b> quy ước Java — kiểu <code>boolean</code> dùng tiền tố <code>is</code>. Jackson và Hibernate đều theo quy ước này. Gõ sai tên getter thì field biến mất khỏi JSON mà không báo lỗi gì.</div>
+<a class="backtop" href="#top-anchor">↑ Về mục lục</a>
+</section>
+
+<!-- 4 -->
+<section id="id">
+<h2 class="sec">4. Sinh id &amp; sequence <span>(id nhảy lên 52)</span></h2>
+
+<div class="why"><b>Sinh ra để giải quyết chuyện gì:</b> mỗi lần xin một id là một lượt đi-về với database. Insert 1000 dòng thành 2000 lượt. Để tránh, Hibernate xin sẵn <b>một dải id</b> rồi tự phát dần trong bộ nhớ.</div>
+
+<h3>Cơ chế</h3>
+<ol>
+<li><code>@GeneratedValue</code> không ghi <code>strategy</code> → Hibernate chọn SEQUENCE.</li>
+<li>Tạo sequence trong database với bước nhảy <b>allocationSize = 50</b> (mặc định).</li>
+<li>Một lần <code>nextval</code> trả về một số → Hibernate hiểu là "50 id kế tiếp thuộc về tôi".</li>
+<li>Cấp dần cho từng object mới, không hỏi lại database.</li>
+</ol>
+
+<h3>Vì sao id nhảy cóc</h3>
+<p>Dải id chỉ sống trong <b>bộ nhớ của app</b>. Tắt app là phần chưa dùng mất luôn — database không biết bạn xài tới đâu, nó chỉ nhớ đã phát dải nào. Khởi động lại, Hibernate xin dải mới, số bắt đầu từ chỗ dải cũ kết thúc. Restart vài lần là id nhảy quãng lớn.</p>
+
+<div class="why"><b>Chốt: không sửa.</b> Id chỉ cần <b>duy nhất</b>, không cần liên tục. Khoảng trống trong id là bình thường ở mọi hệ thống thật — xoá dòng cũng để lại lỗ hổng tương tự. Muốn id liền mạch phải đổi sang <code>IDENTITY</code>, đánh đổi là mất khả năng batch insert.</div>
+
+<div class="tier"><b>Phân tầng thuật ngữ</b>
+<div><span class="rd">Thuộc:</span> sequence, allocationSize</div>
+<div><span class="wn">Hiểu ý:</span> strategy AUTO / SEQUENCE / IDENTITY</div>
+<div><span class="ok">Quên được:</span> tên sequence mặc định, cách khai <code>@SequenceGenerator</code></div>
+</div>
+<a class="backtop" href="#top-anchor">↑ Về mục lục</a>
+</section>
+
+<!-- 5 -->
+<section id="hibernate">
+<h2 class="sec">5. Hibernate sinh SQL</h2>
+
+<h3>Ai sinh SQL, và sinh lúc nào</h3>
+<p>Hibernate <b>soạn khung SQL lúc app khởi động</b>, không phải mỗi lần gọi <code>save()</code>. Khung đó có sẵn dấu <code>?</code> ở chỗ giá trị. Lúc <code>save()</code> chạy, Hibernate chỉ điền giá trị vào dấu <code>?</code> rồi gửi đi.</p>
+
+<h3><code>save()</code> chọn INSERT hay UPDATE thế nào</h3>
+<table>
+<tr><th>Trạng thái id của object</th><th>Hibernate làm gì</th></tr>
+<tr><td><code>id == null</code></td><td>INSERT — đây là object mới</td></tr>
+<tr><td><code>id != null</code></td><td>UPDATE — object này đã có trong database</td></tr>
+</table>
+
+<p>UPDATE <b>không kiểm tra tồn tại trước</b>. Nó chạy câu lệnh rồi xem <b>số dòng bị ảnh hưởng</b> — 0 dòng nghĩa là không có gì để sửa. Đây là lý do trong <code>update()</code> phải tự <code>findById</code> trước để ném 404, chứ không thể dựa vào <code>save()</code> báo lỗi.</p>
+
+<h3><code>ddl-auto</code></h3>
+<p>Thuộc tính <code>spring.jpa.hibernate.ddl-auto</code> quyết định Hibernate có tự tạo/sửa bảng theo Entity hay không. Đây là lý do đến giờ <b>chưa từng viết một câu SQL nào bằng tay</b> — và cũng là lý do lịch có 2 ngày SQL thuần trước khi vào DBI202.</p>
+
+<div class="why"><b>Đã đồng ý không đào sâu:</b> vì sao Hibernate chọn soạn khung lúc khởi động thay vì soạn mỗi lần save. Biết là nó làm vậy, đủ dùng.</div>
+<a class="backtop" href="#top-anchor">↑ Về mục lục</a>
+</section>
+
+<!-- 6 -->
+<section id="repo">
+<h2 class="sec">6. Repository</h2>
+
+<div class="why"><b>Sinh ra để giải quyết chuyện gì:</b> mọi bảng đều cần đúng nhóm thao tác giống nhau — thêm, tìm, sửa, xoá. Viết tay cho từng bảng là lặp vô nghĩa. <code>JpaRepository</code> cho sẵn cả bộ.</div>
+
+<pre><code>public interface TodoRepository extends JpaRepository&lt;Todo, Long&gt; {
+}</code></pre>
+
+<p>Thân rỗng, nhưng dùng được ngay hàng chục method. Hai tham số trong ngoặc nhọn: <b>Entity nào</b> và <b>kiểu của khóa chính</b>.</p>
+
+<div class="why"><b>Đây là interface, không phải class</b> — không có dòng lệnh nào bên trong. Spring tự sinh bản cài đặt lúc chạy. Đó cũng là lý do không viết <code>new TodoRepository()</code> bao giờ.</div>
+
+<h3>Các method đã dùng</h3>
+<table>
+<tr><th>Method</th><th>Trả về</th><th>Ghi chú</th></tr>
+<tr><td><code>save(entity)</code></td><td>Entity đã lưu</td><td>Vừa INSERT vừa UPDATE, tuỳ id. <b>Phải nhận Entity, không nhận DTO.</b></td></tr>
+<tr><td><code>findById(id)</code></td><td><code>Optional&lt;Todo&gt;</code></td><td>Không tìm thấy thì Optional rỗng, không phải null</td></tr>
+<tr><td><code>findAll()</code></td><td><code>List&lt;Todo&gt;</code></td><td>Không có thì trả list rỗng, không phải null</td></tr>
+<tr><td><code>deleteById(id)</code></td><td><code>void</code></td><td>Không báo gì nếu id không tồn tại</td></tr>
+<tr><td><code>existsById(id)</code></td><td><code>boolean</code></td><td>Dùng để tự kiểm trước khi xoá</td></tr>
+</table>
+
+<div class="trap"><b>Bẫy đã dính 3 lần:</b> đưa <code>TodoRequest</code> (DTO) thẳng cho <code>repository.save()</code>. Repository chỉ biết Entity — DTO không phải <code>@Entity</code>, Hibernate không biết lưu nó vào bảng nào. Phải dựng <code>Todo</code> mới, set field từ DTO, rồi mới <code>save</code>.</div>
+
+<div class="trap"><b>Bẫy tên method:</b> lẫn tên của Repository sang Service. Repository dùng <code>save</code>, <code>deleteById</code>; Service dùng <code>create</code>, <code>update</code>, <code>delete</code>. Hai tầng, hai bộ tên — cố ý khác nhau để nhìn tên là biết đang ở tầng nào.</div>
+<a class="backtop" href="#top-anchor">↑ Về mục lục</a>
+</section>
+
+<!-- 7 -->
+<section id="optional">
+<h2 class="sec">7. Optional</h2>
+
+<div class="why"><b>Sinh ra để giải quyết chuyện gì:</b> trả <code>null</code> khi không tìm thấy là nguồn lỗi kinh điển của Java — người gọi quên kiểm tra, chương trình vỡ ở chỗ khác hẳn. <code>Optional</code> là <b>cái hộp</b> buộc người gọi phải mở ra, và mở thì phải nói rõ "nếu rỗng thì làm gì".</div>
+
+<p><code>findById</code> trả <code>Optional&lt;Todo&gt;</code> — không phải <code>Todo</code>. Muốn lấy object bên trong phải xử lý trường hợp rỗng.</p>
+
+<h3><code>orElseThrow</code></h3>
+<p>Là <b>method của Optional</b>, không phải của Repository. Nghĩa: có thì đưa ra, rỗng thì ném exception mình chỉ định.</p>
+
+<div class="why"><b>Vì sao không cần <code>import java.util.Optional</code>:</b> chữ "Optional" không hề xuất hiện trong file Service. Nó chỉ là kiểu trả về trung gian, bị <code>orElseThrow</code> tiêu thụ ngay trên cùng một dòng. Java chỉ bắt import những tên <b>viết ra trong file</b>.</div>
+<a class="backtop" href="#top-anchor">↑ Về mục lục</a>
+</section>
+
+<!-- 8 -->
+<section id="service">
+<h2 class="sec">8. Service &amp; bean</h2>
+
+<pre><code>@Service
+public class TodoService {
+    private final TodoRepository repository;
+
+    public TodoService(TodoRepository repository) {
+        this.repository = repository;
+    }
+    // findAll, findById, create, update, delete
+    // + private TodoResponse toResponse(Todo todo)
+}</code></pre>
+
+<h3>bean</h3>
+<div class="why"><b>Chỉnh cuối sau 3 lần hiểu sai:</b> bean <b>là object</b> — không phải bản thiết kế, không phải khái niệm trừu tượng. Điểm khác duy nhất so với object thường: nó do <b>Spring tạo và giữ</b>, thay vì mình gõ <code>new</code>.</div>
+
+<p>Bean <b>vẫn đổi được trạng thái bên trong</b>. Thứ không đổi là: Spring không tạo cái thứ hai. Cả app dùng chung một object đó.</p>
+
+<h3>Constructor injection</h3>
+<p>Service cần Repository. Thay vì tự <code>new</code>, nó <b>khai trong constructor</b> — Spring thấy vậy thì tự đưa bean Repository vào lúc dựng Service.</p>
+
+<ul>
+<li><code>@Service</code> đánh dấu để Spring biết cần tạo bean từ class này.</li>
+<li><code>final</code> đảm bảo sau khi gán trong constructor thì không ai đổi được nữa.</li>
+<li>Nhờ nhận từ ngoài, sau này test có thể đưa vào một Repository giả.</li>
+</ul>
+
+<h3>Năm method + <code>toResponse</code></h3>
+<table>
+<tr><th>Method</th><th>Nhận</th><th>Trả</th><th>Quyết định gì</th></tr>
+<tr><td><code>findAll</code></td><td>—</td><td><code>List&lt;TodoResponse&gt;</code></td><td>Duyệt list, đổi từng cái sang DTO</td></tr>
+<tr><td><code>findById</code></td><td><code>Long</code></td><td><code>TodoResponse</code></td><td>Không thấy thì ném exception</td></tr>
+<tr><td><code>create</code></td><td><code>TodoRequest</code></td><td><code>TodoResponse</code></td><td>Dựng Entity mới từ DTO</td></tr>
+<tr><td><code>update</code></td><td><code>Long</code>, <code>TodoRequest</code></td><td><code>TodoResponse</code></td><td>Tìm trước, không thấy thì ném; thấy thì set lại field rồi lưu</td></tr>
+<tr><td><code>delete</code></td><td><code>Long</code></td><td><code>void</code></td><td><code>existsById</code> trước, không có thì ném exception</td></tr>
+</table>
+
+<h4>Method <code>toResponse</code></h4>
+<pre><code>private TodoResponse toResponse(Todo todo)</code></pre>
+<p>Gom việc dựng <code>TodoResponse</code> vốn lặp ở 4 chỗ về một chỗ. Thêm field mới vào <code>TodoResponse</code> thì chỉ sửa một nơi, không sợ sót.</p>
+
+<div class="why"><b>Vì sao để <code>private</code>:</b> không phải để giấu dữ liệu — mà để <b>bề mặt công khai của Service nhỏ lại</b>. Đây là việc nội bộ; nếu để <code>public</code>, Controller gọi được, và ngày mai đổi tên hay đổi tham số thì phải sửa cả chỗ ngoài Service.</div>
+
+<div class="why"><b>Vì sao dùng được cả trong vòng lặp lẫn gọi lẻ:</b> nó <b>không giữ trạng thái gì</b>. Không đọc field của class, không sửa gì bên ngoài, không nhớ lần gọi trước. Mọi thứ cần nằm trọn trong tham số; mọi thứ tạo ra đi hết vào giá trị trả về. Gọi lần 1 và lần 500 hoàn toàn độc lập.</div>
+
+<div class="tier"><b>Bốn mức truy cập — thuộc lòng</b>
+<div><code>private</code> → chỉ trong class đó</div>
+<div>không ghi gì (package-private) → mọi class trong cùng package</div>
+<div><code>protected</code> → cùng package + class con</div>
+<div><code>public</code> → mọi nơi, kể cả ngoài project</div>
+</div>
+<a class="backtop" href="#top-anchor">↑ Về mục lục</a>
+</section>
+
+<!-- 9 -->
+<section id="controller">
+<h2 class="sec">9. Controller</h2>
+
+<pre><code>@RestController
+@RequestMapping("/api/todos")
+public class TodoController {
+    private final TodoService service;
+    public TodoController(TodoService service) { ... }
+}</code></pre>
+
+<table>
+<tr><th>Annotation</th><th>Việc của nó</th></tr>
+<tr><td><code>@RestController</code></td><td>Class này nhận HTTP request, và <b>kết quả trả về là dữ liệu</b> (JSON), không phải tên trang web</td></tr>
+<tr><td><code>@RequestMapping("/api/todos")</code></td><td>Tiền tố đường dẫn chung cho mọi method trong class</td></tr>
+<tr><td><code>@GetMapping</code></td><td>Method này nhận GET</td></tr>
+<tr><td><code>@PostMapping</code></td><td>Nhận POST</td></tr>
+<tr><td><code>@PutMapping("/{id}")</code></td><td>Nhận PUT, có phần biến trong đường dẫn</td></tr>
+<tr><td><code>@DeleteMapping("/{id}")</code></td><td>Nhận DELETE</td></tr>
+<tr><td><code>@PathVariable</code></td><td>Lấy phần <code>{id}</code> trong URL đưa vào tham số method</td></tr>
+<tr><td><code>@RequestBody</code></td><td>Lấy body JSON của request, nhờ Jackson dựng thành object</td></tr>
+</table>
+
+<h3>Năm endpoint</h3>
+<table>
+<tr><th>Method + đường dẫn</th><th>Gọi Service</th></tr>
+<tr><td><code>GET /api/todos</code></td><td><code>findAll()</code></td></tr>
+<tr><td><code>GET /api/todos/{id}</code></td><td><code>findById(id)</code></td></tr>
+<tr><td><code>POST /api/todos</code></td><td><code>create(request)</code></td></tr>
+<tr><td><code>PUT /api/todos/{id}</code></td><td><code>update(id, request)</code></td></tr>
+<tr><td><code>DELETE /api/todos/{id}</code></td><td><code>delete(id)</code></td></tr>
+</table>
+
+<div class="why"><b>Vì sao mỗi method chỉ một dòng:</b> Controller chỉ chuyển tiếp. Dòng đó gọi Service rồi trả kết quả. Có if/else trong Controller nghĩa là đang quyết định — việc của Service.</div>
+<a class="backtop" href="#top-anchor">↑ Về mục lục</a>
+</section>
+
+<!-- 10 -->
+<section id="responseentity">
+<h2 class="sec">10. ResponseEntity</h2>
+
+<div class="why"><b>Sinh ra để giải quyết chuyện gì:</b> trả thẳng object thì Spring tự gắn status 200 cho mọi trường hợp. Muốn tự chọn status (201, 204, 404) thì cần một cái vỏ chứa được cả ba phần của response.</div>
+
+<p>Ba ngăn của một HTTP response:</p>
+<table>
+<tr><th>Ngăn</th><th>Chứa gì</th></tr>
+<tr><td><b>Status</b></td><td>Con số: 200, 201, 204, 400, 404...</td></tr>
+<tr><td><b>Header</b></td><td>Thông tin phụ về response (kiểu nội dung, độ dài...)</td></tr>
+<tr><td><b>Body</b></td><td>Nội dung thật — JSON hoặc chuỗi, có thể rỗng</td></tr>
+</table>
+
+<p>Kiểu trong ngoặc nhọn nói rõ body là gì: <code>ResponseEntity&lt;TodoResponse&gt;</code> có body là một todo, <code>ResponseEntity&lt;String&gt;</code> có body là chuỗi.</p>
+
+<div class="trap"><b>Bẫy:</b> khai <code>ResponseEntity&lt;String&gt;</code> rồi đưa cả object exception vào <code>.body(...)</code>. Sai kiểu — phải đưa <code>a.getMessage()</code>, tức chuỗi bên trong nó.</div>
+<a class="backtop" href="#top-anchor">↑ Về mục lục</a>
+</section>
+
+<!-- 11 -->
+<section id="json">
+<h2 class="sec">11. JSON &amp; chuyển đổi</h2>
+
+<div class="why"><b>Vì sao cần JSON:</b> object Java chỉ tồn tại trong bộ nhớ máy chủ, không gửi qua dây mạng được. JSON là cách viết object thành <b>văn bản</b> mà mọi ngôn ngữ đều đọc được. Jackson là thư viện làm việc dịch hai chiều đó, Spring Boot đã kèm sẵn.</div>
+
+<h3>Bốn luật viết JSON</h3>
+<ol>
+<li><b>Tên field luôn trong nháy kép:</b> <code>"title"</code>, không phải <code>title</code>.</li>
+<li><b>Giá trị chuỗi trong nháy kép</b>, còn số và <code>true</code>/<code>false</code> thì không.</li>
+<li><b>Không có dấu phẩy sau phần tử cuối</b> — Java cho phép, JSON thì không.</li>
+<li><b>Ngoặc nhọn</b> <code>{ }</code> là một object, <b>ngoặc vuông</b> <code>[ ]</code> là một danh sách.</li>
+</ol>
+
+<p>Đó là lý do <code>GET /api/todos</code> trả về <code>[ ... ]</code> còn <code>GET /api/todos/52</code> trả về <code>{ ... }</code> — một cái là danh sách, một cái là object đơn.</p>
+
+<h3>Jackson khớp field bằng cách nào</h3>
+<p>Không đọc field trực tiếp mà đi qua <b>getter và setter</b>. Chiều vào: cần setter (hoặc constructor). Chiều ra: cần getter. Thiếu getter thì field lặng lẽ biến mất khỏi JSON, không lỗi gì.</p>
+<a class="backtop" href="#top-anchor">↑ Về mục lục</a>
+</section>
+
+<!-- 12 -->
+<section id="dto">
+<h2 class="sec">12. DTO</h2>
+
+<div class="why"><b>Sinh ra để giải quyết chuyện gì:</b> nếu Controller nhận và trả thẳng <code>Todo</code> thì <b>hình dạng bảng database bị phơi ra ngoài internet</b>. Đổi tên cột là vỡ client. Thêm cột nhạy cảm (mật khẩu chẳng hạn) là lộ ra ngoài mà không ai để ý.</div>
+
+<p>DTO = Data Transfer Object. Hai class riêng cho hai chiều:</p>
+
+<table>
+<tr><th>Class</th><th>Chiều</th><th>Chứa gì</th></tr>
+<tr><td><code>TodoRequest</code></td><td>Vào</td><td><code>title</code>, <code>completed</code> — <b>không có id</b>, vì id do database sinh</td></tr>
+<tr><td><code>TodoResponse</code></td><td>Ra</td><td><code>id</code>, <code>title</code>, <code>completed</code> — có id vì client cần biết vừa tạo ra cái nào</td></tr>
+</table>
+
+<p><code>TodoResponse</code> có constructor 3 tham số để dựng nhanh trong một dòng.</p>
+
+<div class="why"><b>Ranh giới quan trọng:</b> <code>Todo</code> ở lại bên trong, không bao giờ đi ra khỏi Service. Controller chỉ thấy DTO. Đây là lý do sau khi thêm DTO thì cả 5 endpoint đều phải sửa kiểu trả về.</div>
+<a class="backtop" href="#top-anchor">↑ Về mục lục</a>
+</section>
+
+<!-- 13 -->
+<section id="validation">
+<h2 class="sec">13. Validation</h2>
+
+<div class="why"><b>Sinh ra để giải quyết chuyện gì:</b> client có thể gửi bất cứ thứ gì. Không kiểm thì dữ liệu rác vào thẳng database. Kiểm bằng if/else trong Service thì lặp ở mọi method. Validation cho phép <b>khai điều kiện ngay trên field</b> và Spring tự kiểm.</div>
+
+<table>
+<tr><th>Thành phần</th><th>Việc của nó</th></tr>
+<tr><td><code>@NotBlank</code></td><td>Đặt trên field <code>title</code> của <code>TodoRequest</code>: không được null, không được chuỗi rỗng, không được chỉ toàn khoảng trắng</td></tr>
+<tr><td><code>@Valid</code></td><td>Đặt trước <code>@RequestBody</code> ở Controller: <b>bật</b> việc kiểm. Không có nó thì mọi <code>@NotBlank</code> nằm im</td></tr>
+</table>
+
+<p>Cần dependency <b>validation</b> trong <code>pom.xml</code>, không có sẵn theo Web.</p>
+
+<h3>Chuyện gì xảy ra khi sai</h3>
+<p>Spring dừng <b>trước khi</b> gọi Controller, ném <code>MethodArgumentNotValidException</code>, trả 400.</p>
+
+<div class="trap"><b>Đã kiểm chứng 20/8:</b> body 400 hiện ra là <code>timestamp / status / error / path</code> — <b>bản mặc định của Spring Boot</b>, không phải mình viết. Nó <b>không nói field nào sai</b>. Câu message trong <code>@NotBlank</code> không tới được client.<br><br>Lý do: <code>GlobalExceptionHandler</code> mới chỉ bắt <code>TodoNotFoundException</code>, không khớp handler nào nên rơi vào bộ xử lý mặc định.<br><br><b>Nhớ cặp đối chiếu:</b> 404 <b>đi qua</b> handler mình viết, 400 <b>không đi qua</b>.</div>
+<a class="backtop" href="#top-anchor">↑ Về mục lục</a>
+</section>
+
+<!-- 14 -->
+<section id="exception">
+<h2 class="sec">14. Exception &amp; handler</h2>
+
+<h3>Class exception riêng</h3>
+<pre><code>public class TodoNotFoundException extends RuntimeException {
+    public TodoNotFoundException(String message) {
+        super(message);
+    }
+}</code></pre>
+
+<div class="why"><b>Vì sao cần class riêng thay vì ném exception có sẵn:</b> để handler bắt <b>đúng loại</b>. Ném <code>RuntimeException</code> chung thì handler không phân biệt được "không tìm thấy" với mọi lỗi khác.</div>
+
+<div class="trap"><b>Bug đã ngốn phần lớn buổi 20/8:</b> ban đầu class này tự khai <code>private final String message</code> và constructor chỉ gán <code>this.message = message</code>, <b>không gọi <code>super(message)</code></b>.<br><br>Hậu quả: status 404 đúng, nhưng <b>body rỗng trắng</b> — Postman phải chuyển sang tab Raw vì không có JSON nào để hiện.<br><br>Cơ chế: object lúc đó mang <b>hai field cùng tên</b> <code>message</code> — cái tự khai giữ chuỗi, cái của lớp cha vẫn <code>null</code>. <code>getMessage()</code> là method kế thừa, chỉ đọc field của lớp cha. <b>Không phải ghi đè</b>: hai field cùng tồn tại, không cái nào đụng cái nào.<br><br><b>Cách đúng:</b> không khai field nào cả — <code>Throwable</code> đã lo việc lưu message. Chỉ cần <code>super(message)</code>.<br><br><b>Dấu hiệu nhận ra lần sau:</b> exception ném đúng, status đúng, mà body trống → nghi ngay <code>getMessage()</code> trả null.</div>
+
+<h3>Handler tập trung</h3>
+<pre><code>@RestControllerAdvice
+public class GlobalExceptionHandler {
+    @ExceptionHandler(TodoNotFoundException.class)
+    public ResponseEntity&lt;String&gt; handle(TodoNotFoundException a) { ... }
+}</code></pre>
+
+<table>
+<tr><th>Annotation</th><th>Việc của nó</th></tr>
+<tr><td><code>@RestControllerAdvice</code></td><td>Class này bắt exception cho <b>toàn bộ</b> Controller trong app, không phải riêng một cái</td></tr>
+<tr><td><code>@ExceptionHandler(X.class)</code></td><td>Method này lo đúng loại exception X</td></tr>
+</table>
+
+<div class="why"><b>Vì sao gom về một chỗ:</b> nếu mỗi Controller tự try/catch thì cùng một loại lỗi được xử lý mỗi nơi một kiểu. Handler tập trung đảm bảo mọi endpoint trả lỗi giống nhau — và nó là chỗ <b>duy nhất</b> được phép biết mã HTTP nào ứng với exception nào.</div>
+<a class="backtop" href="#top-anchor">↑ Về mục lục</a>
+</section>
+
+<!-- 15 -->
+<section id="status">
+<h2 class="sec">15. Mã trạng thái HTTP</h2>
+
+<table>
+<tr><th>Mã</th><th>Nghĩa</th><th>Dùng khi</th><th>Trạng thái</th></tr>
+<tr><td><b>200</b> OK</td><td>Thành công</td><td>GET, PUT thành công</td><td class="ok">đang dùng</td></tr>
+<tr><td><b>201</b> Created</td><td>Đã tạo mới</td><td>POST thành công</td><td class="wn">nợ 21/8</td></tr>
+<tr><td><b>204</b> No Content</td><td>Xong, không có gì trả</td><td>DELETE thành công</td><td class="wn">nợ 21/8</td></tr>
+<tr><td><b>400</b> Bad Request</td><td>Client gửi sai</td><td>Validation thất bại</td><td class="ok">đang dùng</td></tr>
+<tr><td><b>404</b> Not Found</td><td>Không có thứ được hỏi</td><td>id không tồn tại</td><td class="ok">đang dùng</td></tr>
+</table>
+
+<div class="why"><b>Nguyên tắc phân nhóm:</b> 2xx là thành công, 4xx là <b>client sai</b>, 5xx là <b>server sai</b>. Chọn nhầm nhóm là nói dối client về việc lỗi thuộc về ai.</div>
+<a class="backtop" href="#top-anchor">↑ Về mục lục</a>
+</section>
+
+<!-- 16 -->
+<section id="config">
+<h2 class="sec">16. Cấu hình &amp; môi trường</h2>
+
+<h3>Dependency đã dùng</h3>
+<table>
+<tr><th>Dependency</th><th>Cho cái gì</th></tr>
+<tr><td>Spring Web</td><td>Controller, HTTP, JSON qua Jackson</td></tr>
+<tr><td>Spring Data JPA</td><td>Repository, Hibernate</td></tr>
+<tr><td>PostgreSQL Driver</td><td>Cầu nối tới database thật</td></tr>
+<tr><td>Validation</td><td><code>@NotBlank</code>, <code>@Valid</code></td></tr>
+</table>
+
+<h3>Chuỗi fail-fast của DataSource</h3>
+<p>Sai thông tin kết nối database thì app <b>chết ngay lúc khởi động</b>, không đợi đến lúc có request đầu tiên. Cố ý như vậy: hỏng thì phải hỏng sớm và ồn ào, hơn là chạy được nửa chừng rồi vỡ trước mặt người dùng.</p>
+
+<h3>Cấu trúc package</h3>
+<p>Mọi class nằm trong <code>com.ltp.todo</code> hoặc package con của nó. Spring quét từ package chứa class có <code>@SpringBootApplication</code> trở xuống — <b>class nằm ngoài nhánh đó sẽ không được tìm thấy</b>.</p>
+
+<div class="trap"><b>Nợ bảo mật (hạn 22/8):</b> mật khẩu PostgreSQL đang nằm nguyên trong <code>application.properties</code>, đã lộ 3 lần qua ảnh và file zip. Repo Private nên chưa cháy. Việc cần làm: đổi mật khẩu, đưa cấu hình nhạy cảm ra ngoài, thêm <code>.gitignore</code>.</div>
+<a class="backtop" href="#top-anchor">↑ Về mục lục</a>
+</section>
+
+<!-- 17 -->
+<section id="loi">
+<h2 class="sec">17. Lỗi đã mắc — danh sách để tự canh</h2>
+
+<h3>Khi gõ code</h3>
+<ul>
+<li><b>Đưa DTO cho <code>repository.save()</code></b> — 3 lần. Repository chỉ nhận Entity.</li>
+<li><b>Thêm dòng mới mà quên xoá dòng cũ</b> — 2 lần, khiến <code>save</code> hoặc <code>findById</code> chạy hai lần. Khi sửa: xoá trước, gõ sau.</li>
+<li><b>Gọi getter trần không có object đứng trước</b> — <code>getTitle()</code> thay vì <code>todo.getTitle()</code>.</li>
+<li><b>Dùng biến của method khác</b> — mỗi method có biến riêng, không mang tên từ chỗ này sang chỗ kia.</li>
+<li><b>So sánh boolean với true/false</b> — <code>if (result == true)</code> thay vì <code>if (result)</code>.</li>
+</ul>
+
+<h3>Khi hiểu khái niệm</h3>
+<ul>
+<li><b>Trả lời "vì sao" bằng cách mô tả lại đề bài</b> thay vì nêu nguyên nhân — lỗi lặp nhiều nhất.</li>
+<li><b>Lẫn thuật ngữ giữa các mảng</b>, diễn đạt khái niệm này bằng ngôn từ của khái niệm khác.</li>
+<li><b>Lẫn tên method Repository sang Service.</b></li>
+<li><b>Gọi thẳng repository trong Controller.</b></li>
+<li><b>Khái niệm đã học vẫn trôi sau 1–2 ngày</b> — validation và ResponseEntity đều phải giảng lại từ đầu.</li>
+</ul>
+
+<h3>Ba khái niệm từng hiểu sai rồi mới chỉnh</h3>
+<ul>
+<li><b>bean</b> — sai 3 lần trước khi chốt: bean <b>là</b> object, do Spring tạo và giữ.</li>
+<li><b>shadowing</b> — tưởng là ghi đè, thực ra hai field cùng tên cùng tồn tại.</li>
+<li><b>public</b> — tưởng là "mọi class trong cùng package"; đó là package-private.</li>
+</ul>
+<a class="backtop" href="#top-anchor">↑ Về mục lục</a>
+</section>
+
+<!-- 18 -->
+<section id="no">
+<h2 class="sec">18. Còn nợ ở project này</h2>
+
+<table>
+<tr><th>Việc</th><th>Hạn</th></tr>
+<tr><td>POST trả <b>201</b> thay 200</td><td>21/8</td></tr>
+<tr><td>DELETE trả <b>204</b> thay 200</td><td>21/8</td></tr>
+<tr><td>Handler cho <code>MethodArgumentNotValidException</code> để 400 nói rõ field nào sai</td><td>21/8</td></tr>
+<tr><td><b>Chạy lại đủ 5 endpoint</b> sau khi sửa <code>super(message)</code>, <code>toResponse</code>, <code>if (result)</code></td><td>21/8</td></tr>
+<tr><td>Đổi mật khẩu PostgreSQL + <code>.gitignore</code></td><td>22/8</td></tr>
+<tr><td>JUnit cho <code>TodoService</code></td><td>23–24/8</td></tr>
+</table>
+
+<div class="trap"><b>Điểm cần nhớ:</b> ba sửa cuối ngày 20/8 (<code>super(message)</code>, gom <code>toResponse</code>, rút gọn <code>if</code>) <b>chưa chạy lại endpoint nào</b>. Bản trên GitHub và bản trong máy hiện chưa có bằng chứng nào là chạy đúng.</div>
+<a class="backtop" href="#top-anchor">↑ Về mục lục</a>
+</section>
+
+</div>
+
+<a id="top" href="#top-anchor" title="Về đầu trang">&#8593;</a>
+
+<script>
+(function(){
+  var b=document.getElementById('top');
+  window.addEventListener('scroll',function(){
+    b.style.display = window.scrollY>400 ? 'block' : 'none';
+  });
+})();
+</script>
+</body>
+</html>

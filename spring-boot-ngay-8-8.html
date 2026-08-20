@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spring Initializr và cấu trúc project — Tuần 2, ngày 8/8</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0F2033; --ink-2:#3C5064; --ink-3:#6B7F92;
+  --paper:#EDF1F6; --card:#FFFFFF; --line:#C9D6E2;
+  --blue:#1B5FA8; --blue-soft:#DCE9F7;
+  --amber:#9C5B0B; --amber-soft:#FAEBD3;
+  --red:#A2302F; --red-soft:#F7DEDD;
+  --green:#2C6B41; --green-soft:#DDEDE2;
+  --pad:clamp(16px,4vw,40px);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,sans-serif; font-size:16px; line-height:1.65;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:32px 32px; background-position:-1px -1px;
+}
+.wrap{max-width:980px;margin:0 auto;padding:0 var(--pad) 96px}
+code,.mono{font-family:"IBM Plex Mono",monospace}
+h1,h2,h3{font-family:"Space Grotesk",sans-serif;font-weight:700;line-height:1.2;margin:0}
+a{color:var(--blue)}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px;border-radius:2px}
+
+.hero{padding:clamp(48px,9vw,96px) 0 40px}
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+h1{font-size:clamp(30px,5.4vw,52px);margin:14px 0 12px;letter-spacing:-.02em}
+.lede{color:var(--ink-2);max-width:60ch;margin:0}
+
+section{margin-top:72px;scroll-margin-top:20px}
+.shead{display:flex;align-items:baseline;gap:14px;border-bottom:2px solid var(--ink);padding-bottom:10px;margin-bottom:26px;flex-wrap:wrap}
+.snum{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--blue);font-weight:500}
+h2{font-size:clamp(21px,3.2vw,28px)}
+.sub{color:var(--ink-2);margin:0 0 22px;max-width:62ch}
+h3{font-size:17px;margin:26px 0 8px}
+p{margin:0 0 14px}
+ul{margin:0 0 14px;padding-left:22px}
+li{margin-bottom:6px}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:clamp(16px,2.6vw,24px)}
+.grid2{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+
+.why{border-left:4px solid var(--blue);background:var(--blue-soft);padding:14px 18px;margin:0 0 22px}
+.why b{font-weight:600}
+.warn{border-left:4px solid var(--amber);background:var(--amber-soft);padding:14px 18px;margin:18px 0}
+.bad{border-left:4px solid var(--red);background:var(--red-soft);padding:14px 18px;margin:18px 0}
+
+table{width:100%;border-collapse:collapse;font-size:15px;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:#E3EBF3;font-weight:600;font-size:13px;letter-spacing:.03em;text-transform:uppercase;color:var(--ink-2)}
+tr:last-child td{border-bottom:none}
+td code{font-size:14px;background:#EDF1F6;padding:1px 6px;border-radius:4px}
+.scroller{overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+.tree{background:var(--ink);color:#DCE6F0;border-radius:14px;padding:clamp(18px,3vw,28px);overflow-x:auto}
+.tree pre{margin:0;font-family:"IBM Plex Mono",monospace;font-size:clamp(12px,2.1vw,15px);line-height:2;white-space:pre}
+.tree .nm{color:#8FC7F0}
+.tree .cm{color:#8FA6BC}
+
+.steps{display:grid;gap:12px;counter-reset:s}
+.step{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;position:relative}
+.step::before{counter-increment:s;content:"Bước " counter(s);font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--blue);display:block;margin-bottom:6px;letter-spacing:.06em}
+.step b{display:block;font-weight:600;margin-bottom:4px}
+.step span{font-size:15px;color:var(--ink-2)}
+.step.fail{background:var(--red-soft);border-color:#E9BCBB}
+.step.fail::before{color:var(--red)}
+.step.skip{background:transparent;border-style:dashed;color:var(--ink-3)}
+
+.layers{display:grid;gap:0;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));align-items:stretch}
+.layer{background:var(--card);border:1px solid var(--line);padding:16px}
+.layer:first-child{border-radius:12px 12px 0 0}
+.layer:last-child{border-radius:0 0 12px 12px}
+.layer .lh{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--blue);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
+.layer p{margin:0;font-size:15px;color:var(--ink-2)}
+@media(min-width:760px){
+  .layer:first-child{border-radius:12px 0 0 12px}
+  .layer:last-child{border-radius:0 12px 12px 0}
+  .layer+.layer{border-left:none}
+}
+
+.log{background:var(--ink);color:#DCE6F0;border-radius:14px;padding:clamp(18px,3vw,28px);overflow-x:auto}
+.log pre{margin:0;font-family:"IBM Plex Mono",monospace;font-size:clamp(12px,2vw,14px);line-height:1.9;white-space:pre-wrap}
+.log .k{color:#F2C4C3;font-weight:500}
+.log .g{color:#8FA6BC}
+
+.tier{margin-bottom:18px}
+.tier h3{margin-top:0}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-family:"IBM Plex Mono",monospace;font-size:13px;padding:5px 11px;border-radius:20px;border:1px solid}
+.tier-a .chip{background:var(--card);border-color:var(--ink);color:var(--ink)}
+.tier-b .chip{background:var(--card);border-color:var(--line);color:var(--ink-2)}
+.tier-c .chip{background:transparent;border-color:var(--line);border-style:dashed;color:var(--ink-3)}
+
+.quiz{background:var(--ink);color:#DCE6F0;border-radius:14px;padding:clamp(18px,3vw,28px)}
+.quiz h2{color:#fff}
+.quiz ol{margin:18px 0 0;padding-left:22px}
+.quiz li{margin-bottom:14px;font-size:16px}
+.quiz .hint{display:block;font-size:13px;color:#7FA6CC;margin-top:4px}
+
+footer{margin-top:80px;padding-top:24px;border-top:1px solid var(--line);font-size:14px;color:var(--ink-3)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <div class="eyebrow">Tuần 2 · Ngày 8/8 · Trước khi gõ dòng code đầu tiên</div>
+  <h1>Spring Initializr và<br>cấu trúc project</h1>
+  <p class="lede">Toàn bộ nội dung buổi 8/8: framework sinh ra để làm gì, Initializr tạo ra cái gì, project gồm những phần nào, và app chạy theo trình tự nào khi khởi động.</p>
+</header>
+
+<section id="s1">
+  <div class="shead"><span class="snum">01</span><h2>Framework và library</h2></div>
+  <p class="sub">Trước khi biết Spring Boot làm gì, phải biết nó thay bạn làm phần nào.</p>
+
+  <div class="why"><b>Sinh ra để giải quyết chuyện gì:</b> để tự làm một server bằng Java thuần, bạn phải mở socket lắng nghe port, đọc từng dòng văn bản thô của HTTP request, tự tách method / URL / header / body, tự chuyển JSON thành object, tự mở và đóng kết nối database. Hàng nghìn dòng, và chưa dòng nào liên quan tới việc quản lý todo. Khối đó lặp y hệt ở mọi dự án, nên người ta đóng gói sẵn.</div>
+
+  <div class="scroller">
+  <table>
+    <tr><th>&nbsp;</th><th>Library</th><th>Framework</th></tr>
+    <tr><td><b>Ai gọi ai</b></td><td>Code của bạn gọi nó</td><td>Nó gọi code của bạn</td></tr>
+    <tr><td><b>Ai giữ quyền điều phối</b></td><td>Bạn</td><td>Framework</td></tr>
+    <tr><td><b>Bạn làm gì</b></td><td>Gọi hàm khi cần</td><td>Cắm code vào đúng chỗ nó quy định</td></tr>
+  </table>
+  </div>
+
+  <p style="margin-top:18px">Spring Boot là framework. Bạn không viết vòng điều phối, bạn chỉ đánh dấu class rồi để nó gọi tới.</p>
+</section>
+
+<section id="s2">
+  <div class="shead"><span class="snum">02</span><h2>Spring Initializr</h2></div>
+  <p class="sub">Địa chỉ start.spring.io. Không phải một phần của Spring Boot, không nằm trong project, không chạy cùng ứng dụng. Chỉ là máy sinh khung project, dùng đúng một lần.</p>
+
+  <h3>Nó sinh ra đúng ba thứ</h3>
+  <ul>
+    <li>Một <code>pom.xml</code> đã điền sẵn tên project, phiên bản Java và danh sách dependency.</li>
+    <li>Cây thư mục rỗng đúng chuẩn Maven.</li>
+    <li>Một class khởi động có hàm <code>main</code>.</li>
+  </ul>
+  <p>Hết. Nó không sinh Controller, Service, Entity, không viết hộ dòng logic nào.</p>
+
+  <div class="why"><b>Giá trị thật của nó</b> không phải tạo thư mục — việc đó gõ tay được. Giá trị nằm ở chỗ nó tra bảng tương thích giúp bạn: mỗi dependency phải khai đúng tên nhóm, tên gói và phiên bản khớp nhau, sai một chữ là project không build.</div>
+
+  <h3>Các ô cần điền</h3>
+  <div class="scroller">
+  <table>
+    <tr><th>Ô</th><th>Chọn</th><th>Vì sao</th></tr>
+    <tr><td>Project</td><td>Maven</td><td>Công cụ quản lý thư viện và build; tài liệu phổ biến hơn Gradle</td></tr>
+    <tr><td>Language</td><td>Java</td><td>&mdash;</td></tr>
+    <tr><td>Spring Boot</td><td>Bản mới nhất không có SNAPSHOT hay M</td><td>Đó là bản chưa ổn định</td></tr>
+    <tr><td>Group</td><td><code>com.ltp</code></td><td>Định danh tổ chức, viết như tên miền ngược</td></tr>
+    <tr><td>Artifact</td><td><code>todo</code></td><td>Tên project</td></tr>
+    <tr><td>Packaging</td><td>Jar</td><td>File chạy được, tự chứa server bên trong</td></tr>
+    <tr><td>Configuration</td><td>Properties</td><td>Dạng khóa bằng giá trị, mỗi dòng một cặp. YAML dùng thụt lề, sai một dấu cách là hỏng</td></tr>
+    <tr><td>Java</td><td>21</td><td>Con số này ghi thẳng vào <code>pom.xml</code> làm phiên bản biên dịch — <b>phải khớp JDK đang cài trên máy</b></td></tr>
+  </table>
+  </div>
+
+  <h3>Ba dependency cho todo app</h3>
+  <div class="scroller">
+  <table>
+    <tr><th>Dependency</th><th>Cho bạn cái gì</th></tr>
+    <tr><td><b>Spring Web</b></td><td>Nhận HTTP request, trả JSON; kèm sẵn server Tomcat nhúng bên trong</td></tr>
+    <tr><td><b>Spring Data JPA</b></td><td>Làm việc với database bằng object thay vì viết SQL tay; bên dưới nó dùng Hibernate</td></tr>
+    <tr><td><b>PostgreSQL Driver</b></td><td>Nhận câu SQL, gửi qua mạng tới PostgreSQL, nhận kết quả về</td></tr>
+  </table>
+  </div>
+
+  <div class="warn"><b>Ba hiểu lầm thường gặp.</b> Không bắt buộc dùng Initializr mới làm được Spring Boot — gõ tay <code>pom.xml</code> vẫn được, chỉ mệt. Chọn thiếu dependency không phải làm lại project — mở <code>pom.xml</code> thêm vào là xong. Và không dùng lại nó mỗi lần cần thêm thư viện.</div>
+</section>
+
+<section id="s3">
+  <div class="shead"><span class="snum">03</span><h2>Cấu trúc project</h2></div>
+  <p class="sub">Bốn phần cần nắm. Phần còn lại chưa đụng tới ở Nấc 1.</p>
+
+  <div class="tree">
+<pre>todo/
+├── <span class="nm">pom.xml</span>              <span class="cm">← khai báo dependency, phiên bản Java</span>
+├── src/main/java/
+│   └── com/ltp/todo/
+│       └── <span class="nm">TodoApplication.java</span>   <span class="cm">← điểm khởi động, chứa main</span>
+├── src/main/resources/
+│   └── <span class="nm">application.properties</span>     <span class="cm">← cấu hình DB, port</span>
+└── src/test/java/       <span class="cm">← chưa dùng ở Nấc 1</span></pre>
+  </div>
+
+  <h3>pom.xml</h3>
+  <p>Bản khai báo của Maven: project tên gì, dùng Java mấy, cần thư viện nào. Maven đọc file này rồi tự tải thư viện về. Sửa nó khi cần thêm hoặc bớt dependency.</p>
+
+  <h3>src/main/java</h3>
+  <p>Toàn bộ code bạn viết nằm ở đây, và phải nằm trong package.</p>
+
+  <h3>application.properties</h3>
+  <p>Không phải code, chỉ là các cặp khóa và giá trị. Đây là nơi khai địa chỉ database, user, mật khẩu, port.</p>
+
+  <h3>src/test/java</h3>
+  <p>Chỗ viết test. Nấc 1 chưa động tới.</p>
+</section>
+
+<section id="s4">
+  <div class="shead"><span class="snum">04</span><h2>Package và annotation</h2></div>
+  <p class="sub">Hai thứ quyết định Spring có nhìn thấy code của bạn hay không.</p>
+
+  <h3>Package</h3>
+  <p>Package chính là thư mục lồng nhau, tên package phải khớp đúng đường dẫn: <code>com.ltp.todo</code> nghĩa là <code>com/ltp/todo</code>.</p>
+  <div class="why">Ở PRO192, package chỉ để sắp xếp cho gọn. Trong Spring Boot nó có vai trò khác hẳn: <b>vị trí package quyết định class của bạn có được nạp hay không</b>, vì phạm vi quét lấy vị trí file khởi động làm gốc.</div>
+
+  <h3>Annotation</h3>
+  <p>Một cái nhãn dán lên class, method hoặc field, viết bằng ký tự <code>@</code> cộng một cái tên. Bạn đã gặp <code>@Override</code> ở PRO192.</p>
+  <p><b>Nhãn tự nó không làm gì cả.</b> Nó chỉ có tác dụng khi có một bên khác đọc nó:</p>
+  <ul>
+    <li><code>@Override</code> — bên đọc là trình biên dịch, kiểm tra xem method có thật sự ghi đè không.</li>
+    <li>Annotation của Spring — bên đọc là Spring, lúc khởi động. Thấy nhãn thì tạo bean, không thấy thì bỏ qua.</li>
+  </ul>
+  <p>Ví dụ đời thường: dán nhãn "dễ vỡ" lên thùng hàng. Nhãn không làm thùng cứng hơn — nó chỉ có ích khi người bốc vác nhìn thấy và xử lý khác đi.</p>
+</section>
+
+<section id="s5">
+  <div class="shead"><span class="snum">05</span><h2>Bean và ApplicationContext</h2></div>
+  <p class="sub">Chỗ Spring Boot khác hẳn cách bạn quen ở PRO192.</p>
+
+  <p><b>Bean</b> là một object do Spring tạo ra và giữ hộ bạn, thay vì bạn tự tạo bằng <code>new</code>. Bạn chỉ đánh dấu class bằng annotation; Spring tự tạo object lúc khởi động, cất vào một kho chung, rồi khi class khác cần thì tự đưa tới. Kho chung đó tên là <b>ApplicationContext</b>.</p>
+
+  <h3>Vì sao không tự new</h3>
+  <div class="grid2">
+    <div class="card" style="border-color:#E9BCBB;background:var(--red-soft)">
+      <b>Nếu Service tự new Repository loại PostgreSQL</b>
+      <ul style="margin-top:8px">
+        <li>Không test được Service nếu chưa bật database thật.</li>
+        <li>Đổi sang MySQL phải mở Service ra sửa, dù Service chẳng làm gì với database.</li>
+      </ul>
+    </div>
+    <div class="card" style="border-color:#B4D4C0;background:var(--green-soft)">
+      <b>Nếu để Spring cấp phát</b>
+      <ul style="margin-top:8px">
+        <li>Đổi sang MySQL: thay bean trong kho, không đụng chữ nào trong Service.</li>
+        <li>Muốn test: đưa cho nó một Repository giả chạy trong bộ nhớ.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="why" style="margin-top:22px"><b>Ý cốt lõi:</b> Service phụ thuộc vào <i>vai trò</i> "một Repository", chứ không phụ thuộc vào một class cụ thể nào. Ai lấp vào vai trò đó là quyết định nằm ngoài Service. Đây là lý do Repository được khai báo dưới dạng interface — interface chính là cách Java mô tả một vai trò.</div>
+</section>
+
+<section id="s6">
+  <div class="shead"><span class="snum">06</span><h2>Ba tầng Controller, Service, Repository</h2></div>
+  <p class="sub">Quy ước tổ chức code, không phải cú pháp bắt buộc. Initializr không sinh sẵn — bạn tự tạo package từ 9/8.</p>
+
+  <div class="why"><b>Sinh ra để giải quyết chuyện gì:</b> một request "thêm todo" phải làm ba việc khác loại nhau — hiểu client muốn gì, quyết định đúng sai theo quy tắc, và ghi xuống database. Nhét cả ba vào một class thì khi đổi database, bạn phải sửa cả phần đang xử lý HTTP, dù hai thứ không liên quan gì nhau.</div>
+
+  <div class="layers">
+    <div class="layer"><div class="lh">Controller</div><p>Nhận HTTP request, trả response kèm status code. Không chứa logic nghiệp vụ.</p></div>
+    <div class="layer"><div class="lh">Service</div><p>Logic nghiệp vụ: kiểm tra hợp lệ, quyết định, xử lý.</p></div>
+    <div class="layer"><div class="lh">Repository</div><p>Đọc và ghi database.</p></div>
+  </div>
+
+  <h3>Hai quy tắc phải thuộc</h3>
+  <ul>
+    <li><b>Luồng một chiều, không nhảy tầng.</b> Client → Controller → Service → Repository → Database. Controller không gọi thẳng Repository.</li>
+    <li><b>Response đi ngược lại đúng đường đó.</b> Repository trả dữ liệu cho Service, Service trả cho Controller, Controller mới đóng gói thành JSON kèm status code.</li>
+  </ul>
+
+  <div class="warn"><b>Nối lại với câu 404 của tuần 1:</b> Repository là nơi <i>phát hiện</i> ID không tồn tại, Service là nơi <i>báo động</i> bằng cách ném exception, còn nơi <i>quyết định</i> đổi exception đó thành mã 404 là <b>tầng web</b> — cụ thể là exception handler (bạn sẽ tự viết ngày 13/8), vì chỉ tầng đó biết đến khái niệm HTTP. Controller không viết dòng nào về 404 cả.</div>
+</section>
+
+<section id="s7">
+  <div class="shead"><span class="snum">07</span><h2>Trình tự khởi động</h2></div>
+  <p class="sub">Sáu bước, chạy tuần tự. Biết thứ tự này thì đọc log lỗi mới biết app chết ở đâu.</p>
+
+  <div class="steps">
+    <div class="step"><b>JVM chạy hàm main</b><span>Điểm bắt đầu duy nhất.</span></div>
+    <div class="step"><b>Tạo ApplicationContext</b><span>Dựng kho chứa mọi bean.</span></div>
+    <div class="step"><b>Component scan</b><span>Quét package chứa file khởi động và mọi package con, tìm class đã đánh dấu, tạo bean cho chúng.</span></div>
+    <div class="step"><b>Auto-configuration</b><span>Nhìn xem trong pom.xml có thư viện nào, tự suy ra cần dựng sẵn cái gì. Thấy Spring Web thì dựng Tomcat, thấy Spring Data JPA thì dựng phần kết nối database.</span></div>
+    <div class="step fail"><b>Dựng DataSource và Tomcat</b><span>Dựng thật. App ngày 8/8 chết ở đây vì application.properties còn rỗng.</span></div>
+    <div class="step skip"><b>Sẵn sàng nhận request</b><span>Chưa tới được bước này.</span></div>
+  </div>
+
+  <div class="why" style="margin-top:22px"><b>Chú ý thứ tự:</b> bước 4 quyết định <i>dựng cái gì</i>, bước 5 mới <i>dựng thật</i>. App qua được bước 4 nhưng chết ở bước 5.</div>
+</section>
+
+<section id="s8">
+  <div class="shead"><span class="snum">08</span><h2>Đọc log lỗi</h2></div>
+  <p class="sub">Kỹ năng dùng mỗi ngày từ giờ trở đi.</p>
+
+  <h3>Cấu trúc một dòng log</h3>
+  <p>Sáu phần theo thứ tự: thời gian → mức độ → PID → tên app và tên thread → class ghi ra dòng này → nội dung.</p>
+  <p>Mức độ là phần quét mắt đầu tiên: <b>INFO</b> bình thường, <b>WARN</b> bất thường nhưng chạy tiếp được, <b>ERROR</b> hỏng.</p>
+
+  <div class="bad"><b>Quy tắc quan trọng nhất: đọc ngược từ dưới lên.</b> Khối cuối cùng có khung sao là bản tóm tắt do Spring Boot tự phân tích và viết ra cho người đọc. Khối stack trace dài ngoằng phía trên là truy vết kỹ thuật — người mới hay lao vào đọc trước rồi hoảng.</div>
+
+  <h3>Khối tóm tắt có ba mục</h3>
+  <div class="log">
+<pre><span class="k">Description:</span> <span class="g">← hậu quả: cái gì đã hỏng</span>
+Failed to configure a DataSource: 'url' attribute is not specified...
+
+<span class="k">Reason:</span> <span class="g">← nguyên nhân: thứ bạn phải xử lý</span>
+Failed to determine a suitable driver class
+
+<span class="k">Action:</span> <span class="g">← gợi ý, chỉ tham khảo</span>
+Consider the following: ...</pre>
+  </div>
+
+  <div class="why" style="margin-top:22px"><b>Đọc Reason trước, Description sau.</b> Sửa nguyên nhân thì hậu quả tự hết. Spring Boot đã tách sẵn hiện tượng và nguyên nhân thành hai nhãn riêng — dùng nó để rèn thói quen phân biệt hai thứ đó.</div>
+
+  <div class="warn"><b>Action đọc nhưng đừng làm theo mù quáng.</b> Trong ca ngày 8/8, Spring gợi ý dùng database nhúng H2 — gợi ý viết chung cho mọi người, không biết bạn đã có PostgreSQL. Log gợi ý gì thì cứ đọc, quyết định vẫn là của bạn.</div>
+
+  <h3>Log ngày 8/8 kể lại chuyện gì</h3>
+  <div class="scroller">
+  <table>
+    <tr><th>Dòng</th><th>Nghĩa</th></tr>
+    <tr><td>Starting TodoApplication using Java 21.0.12</td><td>Đúng JDK 21 — việc sửa từ 17 sang 21 đã có tác dụng</td></tr>
+    <tr><td>Found 0 JPA repository interfaces</td><td>Quét xong, chưa có repository nào — đúng, chưa viết</td></tr>
+    <tr><td>Tomcat initialized with port 8080</td><td>Server web đã dựng xong, phần Spring Web hoàn toàn ổn</td></tr>
+    <tr><td>Stopping service [Tomcat]</td><td>Spring tự dọn dẹp, tắt Tomcat vừa dựng</td></tr>
+    <tr><td>exit code 1</td><td>Kết thúc với mã lỗi; 0 là bình thường, khác 0 là hỏng</td></tr>
+  </table>
+  </div>
+
+  <p style="margin-top:18px">Chi tiết đáng chú ý: <b>Tomcat đã dựng thành công rồi mới bị tắt đi</b>. Vấn đề chỉ nằm ở phần database.</p>
+
+  <h3>Nguyên nhân thật</h3>
+  <p>Có Spring Data JPA nên lúc khởi động Spring cố dựng sẵn một <b>connection pool</b> — kho kết nối tới database, dùng lại nhiều lần thay vì mở đóng liên tục. Để dựng kho, nó cần biết nối tới đâu: địa chỉ, cổng, tên database, user, mật khẩu. Những thứ đó chưa được khai. Không có địa chỉ thì cũng không suy ra được nên dùng driver nào.</p>
+  <p>Spring chọn <b>dừng hẳn</b> thay vì chạy tiếp với một nửa cấu hình hỏng, vì chạy tiếp thì lỗi sẽ nổ ra lúc có request thật, khó truy hơn nhiều.</p>
+</section>
+
+<section id="s9">
+  <div class="shead"><span class="snum">09</span><h2>Thuật ngữ phân tầng</h2></div>
+  <p class="sub">Không phải thứ gì cũng cần thuộc. Xếp đúng tầng để khỏi quá tải.</p>
+
+  <div class="tier tier-a">
+    <h3>Bắt buộc thuộc</h3>
+    <div class="chips">
+      <span class="chip">framework</span><span class="chip">dependency</span><span class="chip">Maven</span>
+      <span class="chip">pom.xml</span><span class="chip">application.properties</span><span class="chip">package</span>
+      <span class="chip">annotation</span><span class="chip">bean</span><span class="chip">component scan</span>
+      <span class="chip">Controller / Service / Repository</span><span class="chip">luồng một chiều</span>
+    </div>
+  </div>
+
+  <div class="tier tier-b">
+    <h3>Hiểu ý là đủ</h3>
+    <div class="chips">
+      <span class="chip">ApplicationContext</span><span class="chip">auto-configuration</span><span class="chip">JPA</span>
+      <span class="chip">Hibernate</span><span class="chip">driver</span><span class="chip">JDBC</span>
+      <span class="chip">Tomcat nhúng</span><span class="chip">connection pool</span><span class="chip">Group / Artifact</span>
+    </div>
+  </div>
+
+  <div class="tier tier-c">
+    <h3>Quên được, gặp lại thì tra</h3>
+    <div class="chips">
+      <span class="chip">SNAPSHOT</span><span class="chip">Jar vs War</span><span class="chip">static / templates</span>
+      <span class="chip">src/test</span><span class="chip">Hikari</span><span class="chip">profile</span>
+    </div>
+  </div>
+</section>
+
+<section id="quiz">
+  <div class="quiz">
+    <div class="eyebrow" style="color:#7FA6CC">Tự kiểm tra · trả lời không nhìn lại bài</div>
+    <h2 style="margin:10px 0 8px">Bốn câu của ngày 8/8</h2>
+    <ol>
+      <li>Khác nhau cốt lõi giữa library và framework là gì?
+        <span class="hint">Hỏi: ai giữ quyền gọi ai.</span></li>
+      <li>Vì sao cần cả Spring Data JPA lẫn PostgreSQL Driver? Chỉ một trong hai có được không?
+        <span class="hint">Hỏi: thiếu một cái thì khâu nào trong chuỗi bị đứt.</span></li>
+      <li>Bạn tạo class mới ở package <code>com.ltp.utils</code>, còn file khởi động ở <code>com.ltp.todo</code>. Spring có nhận class đó không, vì sao?
+        <span class="hint">Xem lại bước 3 của trình tự khởi động, chú ý chữ "package con".</span></li>
+      <li>Vì sao app khởi động rồi tắt ngay? Trả lời theo cơ chế, đừng mô tả lại hiện tượng.
+        <span class="hint">Xem bước 4 và 5, cộng với dòng Reason trong log.</span></li>
+    </ol>
+    <p style="margin:22px 0 0;font-size:14px;color:#7FA6CC">Nhắc lại cách trả lời câu "vì sao": gạch bỏ mọi từ đã có trong đề bài. Nếu không còn gì thì đang mô tả, chưa nêu nguyên nhân.</p>
+  </div>
+</section>
+
+<footer>
+  Ngày 8/8 · Tuần 2 · Nấc 1 — dừng đúng ở mức hiểu, chưa gõ dòng code nào. Ngày 9/8: Entity và Repository.
+</footer>
+
+</div>
+</body>
+</html>

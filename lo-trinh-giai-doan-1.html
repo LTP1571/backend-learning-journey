@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Giai đoạn 1 — Nền REST API/CRUD · 1/8 → 6/9/2026</title>
+<style>
+:root{--bg:#12141a;--card:#1a1d25;--card2:#161920;--line:#2a2f3a;--tx:#e4e7ee;--dim:#9aa3b2;--ac:#6ea8fe;--warn:#ffb454;--ok:#5ed49a;--red:#ff7b72;--pur:#c39bff}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:20px}
+body{margin:0;padding:0;background:var(--bg);color:var(--tx);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:880px;margin:0 auto;padding:28px 16px 80px}
+h1{font-size:27px;margin:0 0 6px}
+.sub{color:var(--dim);font-size:14px;margin-bottom:22px}
+nav{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-bottom:30px}
+nav h2{font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--ac);margin:0 0 10px}
+nav ol{margin:0;padding-left:22px}
+nav li{margin-bottom:5px}
+nav a{color:var(--tx);text-decoration:none;font-size:14px;transition:color .15s}
+nav a:hover{color:var(--ac)}
+section{margin-bottom:42px;scroll-margin-top:20px}
+h2.sec{font-size:20px;margin:0 0 10px;padding-bottom:8px;border-bottom:2px solid var(--line)}
+h3{font-size:16px;margin:24px 0 8px;color:var(--ac)}
+p{margin:10px 0}
+ul,ol{margin:10px 0;padding-left:24px}
+li{margin-bottom:6px}
+code{background:#0e1016;padding:1px 6px;border-radius:4px;font-size:14px;color:#c3d0e8}
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:#20242e;color:var(--ac);font-weight:600}
+tr{transition:background .15s}
+table tr:hover{background:#1e222b}
+.box{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-bottom:20px}
+.box h3{margin-top:0}
+.why{background:var(--card2);border-left:3px solid var(--ac);border-radius:0 8px 8px 0;padding:12px 16px;margin:14px 0}
+.why b{color:var(--ac)}
+.trap{background:#1f1418;border-left:3px solid var(--red);border-radius:0 8px 8px 0;padding:12px 16px;margin:14px 0}
+.trap b{color:var(--red)}
+.day{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--line);border-radius:8px;padding:14px 16px;margin-bottom:12px}
+.day.milestone{border-left-color:var(--warn)}
+.day.start{border-left-color:var(--ok)}
+.day.done{border-left-color:var(--ok);opacity:.85}
+.dhead{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.dnum{font-size:17px;font-weight:600}
+.dow{color:var(--dim);font-size:13px}
+.tag{font-size:11px;padding:2px 8px;border-radius:20px;border:1px solid var(--line);color:var(--dim)}
+.tag.m{border-color:var(--warn);color:var(--warn)}
+.tag.s{border-color:var(--ok);color:var(--ok)}
+.tag.d{border-color:var(--ok);color:var(--ok)}
+.day ul{margin:0;padding-left:20px}
+.day li{margin-bottom:5px}
+.day p{margin:8px 0 0;color:var(--dim);font-size:14px}
+b.hl{color:var(--warn)}
+.chk{color:var(--dim);font-size:14px;margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}
+.phase{margin:30px 0 14px;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);border-bottom:1px solid var(--line);padding-bottom:6px}
+.backtop{display:inline-block;margin-top:18px;font-size:13px;color:var(--dim);text-decoration:none;border:1px solid var(--line);border-radius:20px;padding:3px 12px;transition:color .2s,border-color .2s}
+.backtop:hover{color:var(--ac);border-color:var(--ac)}
+#top{position:fixed;right:24px;bottom:24px;z-index:20;display:none;width:44px;height:44px;line-height:41px;text-align:center;background:var(--card);color:var(--ac);border:1px solid var(--line);border-radius:50%;font-size:20px;text-decoration:none;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.35);transition:transform .2s,border-color .2s}
+#top:hover{transform:translateY(-3px);border-color:var(--ac)}
+@media(max-width:620px){
+  h1{font-size:22px}
+  .wrap{padding:20px 14px 70px}
+  h2.sec{font-size:18px}
+  table{font-size:13.5px}
+  th,td{padding:6px 8px}
+  #top{right:16px;bottom:16px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<span id="top-anchor"></span>
+
+<h1>Giai đoạn 1 — Nền REST API/CRUD + Git flow</h1>
+<div class="sub">1/8 → 6/9/2026 · 37 ngày · Từ chưa viết nổi một endpoint đến hai project CRUD hoàn chỉnh</div>
+
+<nav>
+<h2>Mục lục</h2>
+<ol>
+<li><a href="#muctieu">Mục tiêu &amp; điều kiện đầu vào</a></li>
+<li><a href="#nguyentac">Nguyên tắc xuyên suốt</a></li>
+<li><a href="#chongtroi">Cơ chế chống trôi</a></li>
+<li><a href="#daqua">Nhật ký 1/8 – 20/8 (đã qua)</a></li>
+<li><a href="#lich">Lịch chi tiết 21/8 – 6/9</a></li>
+<li><a href="#duoi">Đuôi nhẹ 7 – 11/9</a></li>
+<li><a href="#truotlich">Phương án nếu trượt lịch</a></li>
+<li><a href="#ketqua">Kết quả kỳ vọng cuối giai đoạn</a></li>
+</ol>
+</nav>
+
+<!-- 1 -->
+<section id="muctieu">
+<h2 class="sec">1. Mục tiêu &amp; điều kiện đầu vào</h2>
+
+<div class="why"><b>Vì sao giai đoạn này tồn tại:</b> kỳ 3 mở đầu bằng DBI202 và LAB211 — hai môn có trọng số backend cao nhất kỳ. Vào kỳ mà chưa từng tự viết một API hoàn chỉnh thì phải học nền và học môn cùng lúc. Giai đoạn 1 dồn phần nền vào quãng nghỉ giữa hai kỳ để tháng 9 chỉ còn lo môn.</div>
+
+<h3>Điểm xuất phát (1/8/2026)</h3>
+<ul>
+<li>Nắm HTTP / REST / CRUD ở mức khái niệm.</li>
+<li>Git flow cơ bản.</li>
+<li><b>Chưa</b> viết được CRUD hoàn chỉnh. <b>Chưa</b> viết SQL bằng tay.</li>
+</ul>
+
+<h3>Đích đến (6/9/2026)</h3>
+<ul>
+<li>Hai project Spring Boot + PostgreSQL chạy được, đủ 4 tầng, có exception handling, DTO, validation.</li>
+<li>Project thứ hai có <b>quan hệ 1-n</b> giữa hai bảng.</li>
+<li>Biết viết unit test bằng JUnit.</li>
+<li>Git: branch, PR, merge conflict, rebase, cherry-pick.</li>
+<li>Tự viết được một endpoint mới mà không nhìn code cũ, không hỏi AI.</li>
+</ul>
+
+<h3>Ràng buộc</h3>
+<table>
+<tr><th>Ràng buộc</th><th>Chi tiết</th></tr>
+<tr><td>Thời hạn cứng</td><td>Kỳ 3 khai giảng <b>7/9/2026</b>. Không dời được.</td></tr>
+<tr><td>Quỹ ngày</td><td>17 ngày cuối (21/8 – 6/9) khít 17/17, <b>không còn ngày đệm</b>.</td></tr>
+<tr><td>Nghỉ</td><td>Bỏ nghỉ Chủ nhật trong quãng này.</td></tr>
+<tr><td>Cường độ</td><td>10–15h/tuần.</td></tr>
+</table>
+<a class="backtop" href="#top-anchor">↑ Về mục lục</a>
+</section>
+
+<!-- 2 -->
+<section id="nguyentac">
+<h2 class="sec">2. Nguyên tắc xuyên suốt</h2>
+
+<h3>Mô hình dùng AI theo 3 nấc</h3>
+<table>
+<tr><th>Nấc</th><th>Hiệu lực</th><th>AI được làm gì</th></tr>
+<tr><td><b>Nấc 1</b></td><td>đến hết 6/9/2026</td><td>Chỉ giảng khái niệm. <b>Cấm viết code phục vụ bài của mình.</b></td></tr>
+<tr><td><b>Nấc 2</b></td><td>kỳ 3–4</td><td>Giám khảo / reviewer — chê code mình viết, không nhận code AI sinh sẵn.</td></tr>
+<tr><td><b>Nấc 3</b></td><td>từ kỳ 5 hoặc ngày đi làm đầu tiên</td><td>AI-assisted có thẩm định — AI viết boilerplate cho phần đã chứng minh tự viết được, mình review từng dòng.</td></tr>
+</table>
+
+<p>Trong Giai đoạn 1: đã tắt IntelliJ AI Assistant và Postbot. Không cấm <b>đọc</b> code AI viết để kiểm tra độ hiểu — cấm dùng nó làm bài.</p>
+
+<div class="why"><b>Vì sao siết ở giai đoạn này:</b> đây là quãng duy nhất trước khi vào môn học nặng để xây phản xạ tự gõ. Nếu quen để AI viết hộ ngay từ nền, mọi giai đoạn sau đều dựng trên một nền không có thật.</div>
+
+<h3>Cách học đã chốt</h3>
+<ul>
+<li>Mở đầu mỗi khái niệm bằng câu hỏi <b>"sinh ra để giải quyết chuyện gì"</b> — không học annotation như học từ vựng.</li>
+<li><b>Phân tầng thuật ngữ</b> thành ba mức: bắt buộc thuộc / hiểu ý / quên được.</li>
+<li>Lắp mọi khái niệm của buổi vào <b>một sơ đồ duy nhất</b>, tự nhìn sơ đồ giải thích lại.</li>
+<li>Kết mỗi khái niệm bằng <b>2–3 câu tự kiểm tra</b>, chấm thẳng thắn. Trả lời phải nêu <b>nguyên nhân</b>, mô tả lại đề bài tính là chưa đạt.</li>
+<li>Khi thực hành: làm xong hết việc rồi mới hỏi, không chen giữa chừng.</li>
+</ul>
+
+<h3>Quy tắc tiếng Anh</h3>
+<p>Mọi thứ viết ra — code, comment, README, commit message — <b>100% tiếng Anh</b>, không ngoại lệ. Tài liệu học và ghi chú cá nhân giữ tiếng Việt.</p>
+
+<h3>Kỷ luật hàng ngày</h3>
+<ul>
+<li>≥1 commit GitHub mỗi ngày, kể cả chỉ là log học được gì.</li>
+<li>Cuối ngày tự hỏi: tự gõ bao nhiêu %, AI viết hộ bao nhiêu %? Mục tiêu &gt;90% tự gõ.</li>
+<li>Chủ nhật: viết <code>WEEKLY_LOG.md</code> bằng tiếng Anh — học được gì, còn mù mờ gì.</li>
+</ul>
+<a class="backtop" href="#top-anchor">↑ Về mục lục</a>
+</section>
+
+<!-- 3 -->
+<section id="chongtroi">
+<h2 class="sec">3. Cơ chế chống trôi</h2>
+
+<div class="why"><b>Vấn đề thật đã tự xác định:</b> điểm hỏng không nằm ở độ sâu hiểu mà ở chỗ <b>ngồi được khoảng 10 phút là trôi sang việc khác</b>. Mọi kế hoạch học đều vô nghĩa nếu không giải quyết chỗ này trước.</div>
+
+<p>Bộ bốn phần, làm hết trong máy, không dùng giấy hay sổ:</p>
+<ol>
+<li><b>Câu hỏi của buổi gõ thành comment dòng đầu</b> của file đang làm — nhìn thấy mục tiêu mỗi lần mở file.</li>
+<li><b>Điện thoại để phòng khác</b> suốt cả block.</li>
+<li>Muốn rẽ việc thì gõ <code>// TODO drift: &lt;3 chữ&gt;</code> ngay tại chỗ, không rẽ thật. Cuối buổi Ctrl+F đếm. Tuần đầu <b>chỉ đếm, không ép giảm</b>.</li>
+<li><b>Block 45 phút / nghỉ 10 phút</b>, lúc nghỉ phải đứng dậy khỏi ghế.</li>
+</ol>
+
+<p>Đã thử và bỏ: phương pháp đầu ra, phương pháp đầu vào lần 2, bộ log 5 file trong thư mục riêng — đều tốn công duy trì hơn giá trị mang lại.</p>
+<a class="backtop" href="#top-anchor">↑ Về mục lục</a>
+</section>
+
+<!-- 4 -->
+<section id="daqua">
+<h2 class="sec">4. Nhật ký 1/8 – 20/8 <span style="color:var(--dim);font-size:14px;font-weight:400">(đã qua)</span></h2>
+
+<div class="phase">Tuần 1 · 1 – 7/8 · Nền lý thuyết + Git</div>
+<div class="day done">
+<div class="dhead"><span class="dnum">1 – 7/8</span><span class="tag d">xong</span></div>
+<ul>
+<li>Client/server, HTTP, REST, CRUD, database, khóa chính và khóa ngoại.</li>
+<li>Git flow: <code>init</code>, <code>add</code>, <code>commit</code>, branch, PR, merge, revert.</li>
+<li><b>Tự dựng một merge conflict rồi tự gỡ tay</b> — không đọc hướng dẫn.</li>
+</ul>
+<p>Chốt: Git không phải trọng tâm của lộ trình. Bỏ hẳn force-push và rewrite lịch sử nhánh công khai.</p>
+</div>
+
+<div class="phase">Tuần 2 · 8 – 14/8 · Spring Boot + JPA + PostgreSQL</div>
+<div class="day done">
+<div class="dhead"><span class="dnum">8 – 14/8</span><span class="tag d">xong</span></div>
+<ul>
+<li>Dựng project <code>todo</code>: Spring Web + Data JPA + PostgreSQL Driver.</li>
+<li>ORM và Hibernate — vì sao cần lớp dịch giữa bảng-dòng và class-object.</li>
+<li>Chuỗi fail-fast của DataSource: sai kết nối thì app chết ngay lúc khởi động, không đợi request đầu tiên.</li>
+<li>Bốn tầng: Entity → Repository → Service → Controller, gõ tay từng class.</li>
+</ul>
+</div>
+
+<div class="phase">Tuần 3 · 15 – 20/8 · Exception, DTO, Validation</div>
+<div class="day done">
+<div class="dhead"><span class="dnum">15 – 18/8</span><span class="tag d">xong</span></div>
+<ul>
+<li>Exception riêng cho từng loại lỗi; <code>@RestControllerAdvice</code> + <code>@ExceptionHandler</code> gom xử lý về một chỗ.</li>
+<li><code>ResponseEntity</code> — ba ngăn status / header / body.</li>
+<li>Phân biệt object trong bộ nhớ với văn bản đi qua mạng; bốn luật viết JSON.</li>
+<li>Push project lên GitHub (repo Private).</li>
+</ul>
+</div>
+
+<div class="day done">
+<div class="dhead"><span class="dnum">19/8</span><span class="tag d">xong</span></div>
+<ul>
+<li>Đóng khái niệm <b>bean</b> sau ba lần hiểu sai — bean <b>là</b> object, do Spring tạo và giữ, không phải bản thiết kế.</li>
+<li>Đóng câu hỏi <b>"ai sinh SQL"</b> — Hibernate soạn khung SQL lúc app khởi động, điền giá trị vào dấu <code>?</code> lúc <code>save()</code>; chọn INSERT hay UPDATE theo id null hay khác null.</li>
+<li>Xử lý 404 cho id không tồn tại.</li>
+</ul>
+</div>
+
+<div class="day done">
+<div class="dhead"><span class="dnum">20/8</span><span class="tag d">xong</span></div>
+<ul>
+<li>Đóng <b>Optional</b> — <code>findById</code> trả cái hộp, <code>orElseThrow</code> là method của hộp đó.</li>
+<li>Viết <b>DTO</b>: <code>TodoRequest</code> và <code>TodoResponse</code> — Entity không còn đi ra khỏi Service.</li>
+<li>Thêm <b>validation</b>: <code>@NotBlank</code> trên field, <code>@Valid</code> ở Controller.</li>
+<li>Gom việc dựng response lặp ở 4 chỗ thành một method <code>private toResponse</code>.</li>
+<li>Học <b>allocationSize</b> của sequence — vì sao id nhảy cóc sau mỗi lần restart, và vì sao không cần sửa.</li>
+</ul>
+<div class="chk"><b>Bug ngốn phần lớn buổi:</b> class exception tự khai field <code>message</code> riêng mà không gọi <code>super(message)</code> → status 404 đúng nhưng <b>body rỗng trắng</b>. Nguyên nhân: object mang hai field cùng tên, <code>getMessage()</code> chỉ đọc field của lớp cha, field đó chưa ai gán. Đây là loại bug IDE không báo, code biên dịch sạch, chỉ sai lúc chạy.</div>
+</div>
+
+<h3>Trạng thái project <code>todo</code> tính đến hết 20/8</h3>
+<table>
+<tr><th>Thành phần</th><th>Nội dung</th></tr>
+<tr><td>Entity</td><td><code>Todo</code> — <code>@Entity</code>, <code>@Id</code>, <code>@GeneratedValue</code></td></tr>
+<tr><td>Repository</td><td><code>TodoRepository extends JpaRepository&lt;Todo, Long&gt;</code></td></tr>
+<tr><td>Service</td><td><code>@Service</code>, constructor injection, 5 method + <code>private toResponse</code></td></tr>
+<tr><td>Controller</td><td><code>@RestController</code>, <code>/api/todos</code>, 5 endpoint, <code>@Valid</code> ở POST/PUT</td></tr>
+<tr><td>Exception</td><td><code>TodoNotFoundException</code> + <code>GlobalExceptionHandler</code> → 404</td></tr>
+<tr><td>DTO</td><td><code>TodoRequest</code> (<code>@NotBlank</code>), <code>TodoResponse</code></td></tr>
+</table>
+<a class="backtop" href="#top-anchor">↑ Về mục lục</a>
+</section>
+
+<!-- 5 -->
+<section id="lich">
+<h2 class="sec">5. Lịch chi tiết 21/8 – 6/9</h2>
+
+<div class="box">
+<h3>Nguyên tắc của quãng này</h3>
+<ul>
+<li><b class="hl">Project #2 viết không có bảng gạch thao tác</b> — AI chỉ giảng khái niệm mới (quan hệ 1-n), các class còn lại tự dựng. Đây là phép thử duy nhất xem có tự viết được không.</li>
+<li>Kẹt thì nói kẹt ở đâu, AI hỏi ngược chứ không đưa lời giải. Kẹt quá <b>15 phút</b> ở cùng một chỗ mới gỡ — và ghi lại chỗ đó, vì đó chính là phần chưa thuộc.</li>
+<li>Nấc 1 còn hiệu lực đến hết 6/9: cấm AI viết code phục vụ bài của mình.</li>
+<li>Block 45 phút / nghỉ 10 phút đứng dậy khỏi ghế. Điện thoại để phòng khác. Muốn rẽ việc thì gõ <code>// TODO drift: &lt;3 chữ&gt;</code>, cuối buổi Ctrl+F đếm.</li>
+<li>Mọi thứ viết ra (comment, README, commit) — tiếng Anh. ≥1 commit/ngày.</li>
+</ul>
+</div>
+
+<div class="phase">Đóng nốt project todo · 21 – 25/8</div>
+
+<div class="day">
+<div class="dhead"><span class="dnum">21/8</span><span class="dow">Thứ Sáu</span></div>
+<ul>
+<li>POST trả <b>201 Created</b> thay 200.</li>
+<li>DELETE trả <b>204 No Content</b> thay 200.</li>
+<li>Thêm <code>@ExceptionHandler</code> cho <code>MethodArgumentNotValidException</code> — để body 400 nói rõ <b>field nào sai</b>, thay vì body mặc định của Spring.</li>
+<li><b class="hl">Chạy lại đủ 5 endpoint</b> trên Postman. Món nợ từ 20/8, và giờ càng cần vì vừa sửa thêm ba chỗ.</li>
+</ul>
+<div class="chk">Ca bắt buộc kiểm: PUT id ảo → 404 <b>có message</b> (trước đây body rỗng). POST title rỗng → 400 <b>có tên field</b>.</div>
+</div>
+
+<div class="day">
+<div class="dhead"><span class="dnum">22/8</span><span class="dow">Thứ Bảy</span><span class="tag m">mốc đã chốt</span></div>
+<ul>
+<li>Đổi mật khẩu PostgreSQL.</li>
+<li>Đưa cấu hình nhạy cảm ra khỏi <code>application.properties</code>.</li>
+<li>Thêm <code>.gitignore</code>, push lại repo.</li>
+</ul>
+<p>Mật khẩu cũ đã lộ nhiều lần qua ảnh chụp màn hình. Repo Private nên chưa cháy, nhưng đây là mốc không dời.</p>
+</div>
+
+<div class="day">
+<div class="dhead"><span class="dnum">23/8</span><span class="dow">Chủ nhật</span></div>
+<ul>
+<li><b>JUnit ngày 1</b> — test cho <code>TodoService</code>: findById trả đúng object; findById id ảo ném exception; create lưu được.</li>
+<li>Học công cụ mới trên code đã quen, không học hai thứ mới cùng lúc.</li>
+<li>WEEKLY_LOG tiếng Anh, 20 phút.</li>
+</ul>
+</div>
+
+<div class="day">
+<div class="dhead"><span class="dnum">24/8</span><span class="dow">Thứ Hai</span></div>
+<ul>
+<li><b>JUnit ngày 2</b> — nốt update và delete. Với mỗi test tự hỏi: test này chứng minh gì, xoá dòng nào thì nó vẫn pass sai?</li>
+</ul>
+</div>
+
+<div class="day milestone">
+<div class="dhead"><span class="dnum">25/8</span><span class="dow">Thứ Ba</span><span class="tag m">CHECKPOINT</span></div>
+<p style="margin:0 0 8px">Tự chấm 4 câu, cần đạt <b>≥3/4</b>:</p>
+<ul>
+<li>Tự giải thích luồng request → server → database → response bằng lời mình?</li>
+<li><b class="hl">Tự viết thêm một endpoint hoàn toàn mới cho <code>todo</code></b> — không nhìn code cũ, không bảng gạch thao tác, không hỏi AI? (ví dụ: lọc theo trạng thái <code>GET /api/todos?completed=true</code>, hoặc đếm số todo chưa xong)</li>
+<li>Biết tạo branch, mở PR, và tự giải quyết một merge conflict?</li>
+<li>Repo có commit đều theo từng bước, không phải 1 commit "done" duy nhất?</li>
+</ul>
+<p>Sau đó: chọn domain cho project #2 (khác todo, có quan hệ cha–con rõ ràng).</p>
+<div class="chk">Câu 2 là bản chạy thử rẻ tiền cho ngày mai. Viết nổi một endpoint một mình → nhiều khả năng dựng được project #2 không bảng gạch. Kẹt ngay ở đó → biết trước một ngày, đúng chức năng của checkpoint. Nó chạm đủ ba tầng, cộng một thứ chưa từng làm: đặt tên method để Spring Data tự sinh truy vấn.</div>
+</div>
+
+<div class="phase">Project #2 · Tự viết, không bảng gạch · 26/8 – 6/9</div>
+
+<div class="day start">
+<div class="dhead"><span class="dnum">26/8</span><span class="dow">Thứ Tư</span><span class="tag s">BẮT ĐẦU</span></div>
+<ul>
+<li>Dựng project mới qua Spring Initializr: Web + JPA + PostgreSQL + Validation.</li>
+<li>Tạo database mới.</li>
+<li>Viết <b>2 entity</b> có quan hệ cha–con.</li>
+</ul>
+<p>Khái niệm mới duy nhất được giảng ở giai đoạn này: <code>@OneToMany</code>, <code>@ManyToOne</code>, <code>mappedBy</code>, và vì sao một phía phải là chủ.</p>
+</div>
+
+<div class="day">
+<div class="dhead"><span class="dnum">27/8</span><span class="dow">Thứ Năm</span></div>
+<ul>
+<li>Hai Repository.</li>
+<li>Service cho entity <b>cha</b>: 5 method, DTO, exception riêng.</li>
+</ul>
+</div>
+
+<div class="day">
+<div class="dhead"><span class="dnum">28/8</span><span class="dow">Thứ Sáu</span></div>
+<ul>
+<li>Service cho entity <b>con</b> — chỗ khó thật của project này: tạo con phải kiểm tra cha có tồn tại không, xoá cha thì con đi đâu.</li>
+</ul>
+<div class="chk">Đây là phần todo không dạy được. Nếu có một ngày cần thêm giờ, là ngày này.</div>
+</div>
+
+<div class="day">
+<div class="dhead"><span class="dnum">29/8</span><span class="dow">Thứ Bảy</span></div>
+<ul>
+<li>Hai Controller, đường dẫn lồng nhau (con nằm dưới cha).</li>
+<li><code>@Valid</code> ở POST/PUT.</li>
+</ul>
+</div>
+
+<div class="day">
+<div class="dhead"><span class="dnum">30/8</span><span class="dow">Chủ nhật</span></div>
+<ul>
+<li>DTO cho cả hai entity: Request và Response riêng.</li>
+<li>Quyết định: Response của cha có kèm danh sách con không, và vì sao.</li>
+<li>WEEKLY_LOG tiếng Anh, 20 phút.</li>
+</ul>
+</div>
+
+<div class="day">
+<div class="dhead"><span class="dnum">31/8</span><span class="dow">Thứ Hai</span></div>
+<ul>
+<li>Exception riêng cho từng entity + <code>GlobalExceptionHandler</code>.</li>
+<li>Áp thẳng bài học 20/8: chỉ <code>super(message)</code>, không tự khai field.</li>
+</ul>
+</div>
+
+<div class="day">
+<div class="dhead"><span class="dnum">1/9</span><span class="dow">Thứ Ba</span></div>
+<ul>
+<li>Test Postman toàn bộ: mọi endpoint của cả hai entity, cả ca thành công lẫn ca lỗi.</li>
+<li>Ca dễ sót: tạo con với id cha không tồn tại; xoá cha đang có con.</li>
+</ul>
+</div>
+
+<div class="day">
+<div class="dhead"><span class="dnum">2/9</span><span class="dow">Thứ Tư</span></div>
+<ul>
+<li>JUnit cho project #2 — lần này tự viết, không giảng lại.</li>
+</ul>
+</div>
+
+<div class="day">
+<div class="dhead"><span class="dnum">3/9</span><span class="dow">Thứ Năm</span></div>
+<ul>
+<li>Git: rebase và cherry-pick trên project thật.</li>
+<li>Tự dựng tình huống rồi tự gỡ, như đã làm với merge conflict.</li>
+</ul>
+</div>
+
+<div class="day">
+<div class="dhead"><span class="dnum">4/9</span><span class="dow">Thứ Sáu</span></div>
+<ul>
+<li>README tiếng Anh cho project #2: chạy thế nào, có endpoint gì, database ra sao.</li>
+<li>Push. Kiểm tra <code>.gitignore</code> đã che cấu hình nhạy cảm.</li>
+</ul>
+</div>
+
+<div class="day">
+<div class="dhead"><span class="dnum">5/9</span><span class="dow">Thứ Bảy</span></div>
+<ul>
+<li><b>Test debug ngược:</b> nhờ AI cấy vài bug ẩn vào bản sao code, tự tìm không dùng AI.</li>
+</ul>
+<div class="chk">Bug nên cấy đúng loại đã dính: quên super(message), DTO đưa thẳng cho save(), thêm dòng mới quên xoá dòng cũ.</div>
+</div>
+
+<div class="day milestone">
+<div class="dhead"><span class="dnum">6/9</span><span class="dow">Chủ nhật</span><span class="tag m">ĐÓNG NẤC 1</span></div>
+<ul>
+<li><b>AI làm giám khảo:</b> 5 câu như interviewer, tự chấm.</li>
+<li>WEEKLY_LOG tiếng Anh.</li>
+<li>Tổng kết Giai đoạn 1: viết ra 3 thứ còn mù mờ nhất để mang sang kỳ 3.</li>
+</ul>
+<p>Từ 7/9 chuyển <b>Nấc AI 2</b>: AI thành giám khảo/reviewer, chê code mình viết — vẫn không nhận code AI sinh sẵn.</p>
+</div>
+<a class="backtop" href="#top-anchor">↑ Về mục lục</a>
+</section>
+
+<!-- 6 -->
+<section id="duoi">
+<h2 class="sec">6. Đuôi nhẹ · đẩy sang tuần đầu kỳ 3 (7 – 11/9)</h2>
+<div class="box">
+<ul>
+<li>SQL viết tay ngày 1 và ngày 2 — chạy trên database của cả hai project.</li>
+<li>Đọc đề cương 4 môn kỳ 3.</li>
+<li>Block phỏng vấn 5 câu.</li>
+</ul>
+<p style="color:var(--dim);font-size:14px;margin:10px 0 0">SQL tay là món chuẩn bị cho DBI202 — môn có trọng số backend cao nhất kỳ 3. Cả Giai đoạn 1 dùng <code>ddl-auto</code> nên chưa từng viết một câu SQL nào bằng tay. Đừng để trôi thêm.</p>
+</div>
+<a class="backtop" href="#top-anchor">↑ Về mục lục</a>
+</section>
+
+<!-- 7 -->
+<section id="truotlich">
+<h2 class="sec">7. Phương án nếu trượt lịch</h2>
+
+<div class="why"><b>Vì sao phải quyết trước:</b> lịch khít 17/17 không còn ngày đệm. Quyết thứ tự cắt lúc đang bình tĩnh thì tốt hơn quyết lúc còn hai ngày và đang hoảng.</div>
+
+<h3>Cắt theo thứ tự</h3>
+<ol>
+<li><b>rebase / cherry-pick</b> (3/9) — Git không phải trọng tâm, học sau vẫn kịp.</li>
+<li><b>Debug ngược</b> (5/9) — hữu ích nhưng là bài tập kiểm tra, không phải kiến thức mới.</li>
+<li><b>JUnit của project #2</b> (2/9) — vẫn giữ JUnit đã làm ở project todo.</li>
+<li><b>Rút project #2</b> còn 2 entity quan hệ 1-n + CRUD, bỏ mọi thứ khác.</li>
+</ol>
+
+<h3>Không cắt trong mọi trường hợp</h3>
+<ul>
+<li><b>Quan hệ 1-n</b> — thứ duy nhất project #2 dạy mà project #1 không có.</li>
+<li><b>Mốc bảo mật 22/8.</b></li>
+<li><b>Checkpoint 25/8.</b></li>
+<li><b>SQL viết tay.</b></li>
+</ul>
+<a class="backtop" href="#top-anchor">↑ Về mục lục</a>
+</section>
+
+<!-- 8 -->
+<section id="ketqua">
+<h2 class="sec">8. Kết quả kỳ vọng cuối giai đoạn</h2>
+
+<table>
+<tr><th>Hạng mục</th><th>Đích</th></tr>
+<tr><td>Project</td><td>2 project Spring Boot + PostgreSQL chạy được, đủ 4 tầng</td></tr>
+<tr><td>Kiến trúc</td><td>Exception handling tập trung, DTO tách Entity khỏi API, validation ở biên</td></tr>
+<tr><td>Quan hệ dữ liệu</td><td>1-n giữa hai bảng, xử lý được ràng buộc khi tạo và xoá</td></tr>
+<tr><td>Testing</td><td>Unit test JUnit cho tầng Service của cả hai project</td></tr>
+<tr><td>Git</td><td>branch, PR, merge conflict, rebase, cherry-pick — đều làm tay ít nhất một lần</td></tr>
+<tr><td>Tự lực</td><td>Viết được một endpoint mới không nhìn code cũ, không hỏi AI</td></tr>
+<tr><td>Tài liệu</td><td>README tiếng Anh cho cả hai project</td></tr>
+</table>
+
+<h3>Ba thứ giai đoạn này cố ý KHÔNG làm</h3>
+<ul>
+<li><b>SQL viết tay</b> — đẩy sang tuần đầu kỳ 3, học cùng DBI202 để không học hai lần.</li>
+<li><b>Spring Security / authentication</b> — để kỳ 4, khi làm dự án cá nhân có người dùng thật.</li>
+<li><b>Docker / CI</b> — để kỳ 5, khi dự án đã đủ lớn để cần.</li>
+</ul>
+
+<div class="why"><b>Nguyên tắc đằng sau:</b> mỗi thứ học đúng lúc nó giải quyết một vấn đề mình đang gặp thật. Học Docker khi chưa có gì để deploy thì chỉ là học cú pháp rồi quên.</div>
+<a class="backtop" href="#top-anchor">↑ Về mục lục</a>
+</section>
+
+</div>
+
+<a id="top" href="#top-anchor" title="Về đầu trang">&#8593;</a>
+
+<script>
+(function(){
+  var b=document.getElementById('top');
+  window.addEventListener('scroll',function(){
+    b.style.display = window.scrollY>400 ? 'block' : 'none';
+  });
+})();
+</script>
+</body>
+</html>
