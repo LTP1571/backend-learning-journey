@@ -4,6 +4,8 @@ Self-directed study plan for becoming a backend developer (Java / Spring Boot), 
 
 I am a Software Engineering student. This repository holds the roadmap I follow, the schedule I hold myself to, and the notes I take while learning. It is a working record, not a tutorial — everything here is written for my own use and published in case it is useful to someone in the same position.
 
+**The documents are in Vietnamese.** This README is in English so you can decide whether they are worth translating.
+
 ---
 
 ## Why this repository exists
@@ -16,12 +18,22 @@ The second reason is accountability. A plan kept in a private file is easy to qu
 
 ## Contents
 
+### Planning
+
 | File | What it is |
 |---|---|
+| `roadmap-public.md` | **Full roadmap** through graduation — one section per term, mapped against the actual course list. Includes the mistakes made while building it |
 | `lo-trinh-giai-doan-1.html` | **Phase 1 roadmap** (1 Aug – 6 Sep 2026) — goals, principles, day-by-day schedule, contingency plan |
+| `subject-importance.html` | **Course prioritisation** — every course scored by relevance to backend work, to decide where extra self-study time goes |
+
+### Study notes
+
+| File | What it is |
+|---|---|
+| `nen-tang-backend-tuan-1.html` | **Week 1** — client/server, HTTP, REST, CRUD, database fundamentals |
+| `spring-boot-ngay-8-8.html` | **Spring Initializr and project structure** — what each dependency does and why the package layout matters |
 | `tong-hop-project-todo.html` | **Knowledge summary** for the first project — every concept learned, why it exists, and the traps I fell into |
 | `tra-cuu.html` | **Searchable reference** — only things I got wrong or forgot mid-session. Ctrl+F by term |
-| `lo-trinh-backend-v5.md` | **Full roadmap** through graduation, mapped against the actual course list per term |
 
 The HTML files are self-contained — no build step, no dependencies. Clone and open in a browser.
 
@@ -47,6 +59,10 @@ The reasoning: this is the only stretch before heavy coursework where I can buil
 - Terminology is sorted into three tiers: must memorise / understand the idea / safe to forget.
 - All concepts from one session get assembled into **a single diagram**, and I explain it back from the diagram alone.
 - Each concept closes with self-test questions. An answer that restates the question instead of naming the cause does not count as passing.
+
+### What gets written down
+
+`tra-cuu.html` only contains things I actually got wrong, asked about twice, or forgot mid-session. Anything obvious on sight is deliberately left out — a reference full of things you already know is a reference you stop opening.
 
 ### Working language
 

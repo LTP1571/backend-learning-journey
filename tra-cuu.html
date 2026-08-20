@@ -522,7 +522,7 @@ a.up:hover{
     <p><code>ddl-auto=update</code> — Hibernate tự tạo/bổ sung bảng cho khớp entity lúc khởi động. Nó <b>chỉ thêm</b>, không xoá cột cũ.</p>
     <p><code>show-sql=true</code> + <code>format_sql=true</code> — in câu SQL thật ra console. Đây là công cụ chính để tự trả lời "Hibernate đang làm gì".</p></dd>
     <dt>Dễ nhầm</dt>
-    <dd><p><span class="trap">Để mật khẩu trần rồi chụp màn hình.</span> Đã lộ 2 lần (10/8, 18/8). Che dòng <code>password</code> khi chụp.</p></dd>
+    <dd><p><span class="trap">Để mật khẩu trần trong <code>application.properties</code> rồi chụp màn hình hoặc commit lên Git.</span> Lỗi này dễ mắc vì file cấu hình mở ra suốt. Hai việc phải làm sớm: đưa thông tin nhạy cảm ra biến môi trường, và thêm <code>.gitignore</code> trước commit đầu tiên — sửa file sau khi đã push thì bản cũ vẫn nằm trong lịch sử Git.</p></dd>
   </dl>
 </section>
 
